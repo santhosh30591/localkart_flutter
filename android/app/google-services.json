@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "638057148704",
+    "project_id": "localkartmarketing-onesignal",
+    "storage_bucket": "localkartmarketing-onesignal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638057148704:android:f89ad83defe29929842745",
+        "android_client_info": {
+          "package_name": "com.localkartmarketing.localkart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "638057148704-859obnqtn6p9bi8e8dcoj070tkd72996.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1tZuMZZIvc6_-0yaobsCzsmX8ccPgIgA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "638057148704-859obnqtn6p9bi8e8dcoj070tkd72996.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
