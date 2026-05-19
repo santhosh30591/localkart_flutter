@@ -66,5 +66,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Permission to access location when the app is in the foreground -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to your location to show nearby services.</string>
+
+    <!-- Permission to access location at all times (including background) -->
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs your location to track your progress even when the screen is off.</string>
+
+    <!-- Only required if you support iOS 10 or earlier -->
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to your location in the background.</string>
 </dict>
 </plist>

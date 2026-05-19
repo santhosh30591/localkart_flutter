@@ -597,7 +597,7 @@ class _PostNotyDetails extends State<PostNotyDetails>
                                 .toString(),
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              return Image.asset("assets/logo_removebg.png");
+                              return Image.asset("assets/logo_with_name.png");
                             },
                           ),
                         ),

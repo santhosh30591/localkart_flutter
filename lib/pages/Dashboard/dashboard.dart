@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:localkart/Api/provider/home_provider.dart';
 import 'package:localkart/RoutingSetup/root_data_pass.dart';
 import 'package:localkart/RoutingSetup/router-constants.dart';
@@ -184,6 +185,7 @@ class _DashboardPage extends State<DashboardPage> {
       if (!isLiveMode) {
         await initOneSignal();
       }
+      await checkingGpsSearch();
 
       setState(() {});
     });
@@ -340,32 +342,32 @@ class _DashboardPage extends State<DashboardPage> {
                             ),
                           ),
                         ),
-                        InkWell(
-                          onTap: () async {
-                            if (!isLiveMode) {
-                              if (_currentIndex == 0) {
-                                Navigator.of(
-                                  context,
-                                ).pushNamed(root_notification_list);
-                              } else {
-                                showEventAlerts();
-                              }
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(5),
-                            margin: EdgeInsets.only(right: 5),
-                            child: Icon(
-                              _currentIndex == 0
-                                  ? Icons.notifications_none
-                                  : _currentIndex == 1
-                                  ? Icons.filter_alt_outlined
-                                  : null,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                        ),
+                        // InkWell(
+                        //   onTap: () async {
+                        //     if (!isLiveMode) {
+                        //       if (_currentIndex == 0) {
+                        //         Navigator.of(
+                        //           context,
+                        //         ).pushNamed(root_notification_list);
+                        //       } else {
+                        //         showEventAlerts();
+                        //       }
+                        //     }
+                        //   },
+                        //   child: Container(
+                        //     padding: EdgeInsets.all(5),
+                        //     margin: EdgeInsets.only(right: 5),
+                        //     child: Icon(
+                        //       _currentIndex == 0
+                        //           ? Icons.notifications_none
+                        //           : _currentIndex == 1
+                        //           ? Icons.filter_alt_outlined
+                        //           : null,
+                        //       color: Colors.white,
+                        //       size: 24,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                     body: Container(
@@ -1882,6 +1884,8 @@ class _DashboardPage extends State<DashboardPage> {
     } catch (e) {
       print("My res err " + e.toString());
     }
+
+    await checkingGpsSearch();
   }
 
   var selectEventFilter = 1;
@@ -2260,6 +2264,152 @@ class _DashboardPage extends State<DashboardPage> {
           },
         );
       },
+    );
+  }
+
+  checkingGpsSearch() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    permission = await Geolocator.checkPermission();
+    if (!serviceEnabled || permission == LocationPermission.denied) {
+      showAlertDialog();
+    } else {
+      String latitude = await DBHelper().getLocationDetailsDB(true);
+
+      if (latitude != "" ||
+          latitude != "0.0" ||
+          latitude != "null" ||
+          latitude != null) {
+        // if (isSerach) {
+        //   // Navigator.of(context).pushNamed(roots);
+        //   // checkingLogin(roots);
+        // } else {
+        Position position = await _getGeoLocationPosition();
+
+        await DBHelper().saveLocationDetailsDB(
+          position.latitude,
+          position.longitude,
+        );
+
+        print("ammu location test 1");
+      }
+      latitude = await DBHelper().getLocationDetailsDB(true);
+      print("ammu location test latitude " + latitude.toString());
+
+      setState(() {
+        // _isLoading = false;
+      });
+    }
+  }
+
+  String confirmBtn_details = "Continue";
+
+  Future<void> showAlertDialog() async {
+    Widget yesButton = TextButton(
+      child: Text(confirmBtn_details),
+      onPressed: () async {
+        confirmBtn_details = "Retry Again";
+
+        setState(() {});
+
+        Position position = await _getGeoLocationPosition();
+
+        print("post late -  " + position.latitude.toString());
+
+        if (await DBHelper().saveLocationDetailsDB(
+          position.latitude,
+          position.longitude,
+        )) {
+          setState(() {
+            var location = '${position.latitude} ';
+            print("the locationdata is " + location.toString());
+            setState(() {
+              // _isLoading = false;
+            });
+          });
+          Navigator.pop(context);
+          // checkingLogin(roots);
+        } else {
+          ShowToastdur(
+            context,
+            "Location not getting so please wait some time",
+          );
+        }
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Sorry!"),
+      content: const Text(
+        "Allow location to get the current location to identify the nearest services .",
+      ),
+      actions: [
+        // opction,
+        yesButton,
+      ],
+    );
+
+    // show the dialog
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // context1 = context;
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return alert;
+          },
+        );
+      },
+    );
+  }
+
+  Future<Position> _getGeoLocationPosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    print("my response 0 " + serviceEnabled.toString());
+
+    if (!serviceEnabled) {
+      var respons = await await Geolocator.openLocationSettings();
+
+      print("my response 1 " + respons.toString());
+
+      return Future.error('Location services are disabled.');
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+
+      print("my response 2 " + permission.toString());
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      print("my response 3 " + permission.toString());
+      return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
+    }
+
+    // if (serviceEnabled) {
+    //   // back
+    //   Navigator.of(context).pop();
+    // }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.low, // Lower accuracy loads much faster
+        distanceFilter: 100,
+      ),
     );
   }
 }

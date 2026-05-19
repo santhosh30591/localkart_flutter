@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:localkart/Api/api_client.dart';
 import 'package:localkart/Api/config.dart';
@@ -7,6 +8,7 @@ import 'package:localkart/model/sub_get_price.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/action_bar.dart';
 import 'package:localkart/unit/showing.dart';
+import 'package:localkart/unit/showingSubscriptinPriceAlerts.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class SubscriptionPlansList extends StatefulWidget {
@@ -20,10 +22,14 @@ class SubscriptionPlansList extends StatefulWidget {
 class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
   late Razorpay _razorpay;
   bool _isLoading = false;
+  var referalCode = "";
   String userIndexId = "";
   String selectedPlanId = "";
 
-  late GetPriceListModel _getPriceListModel = GetPriceListModel(description: [], result: []);
+  late GetPriceListModel _getPriceListModel = GetPriceListModel(
+    description: [],
+    result: [],
+  );
   Map<String, dynamic> _planBenefitsData = {};
   List<String> _planNames = [];
 
@@ -46,10 +52,7 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
   loadInitialData() async {
     userIndexId = await DBHelper().getLoginSubDB("Id");
     setState(() => _isLoading = true);
-    await Future.wait([
-      getSubDetailsView(),
-      getGetPrice(),
-    ]);
+    await Future.wait([getSubDetailsView(), getGetPrice()]);
     setState(() => _isLoading = false);
   }
 
@@ -71,13 +74,16 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
   Future<void> getSubDetailsView() async {
     try {
       Map<String, Object> inputs = {"userIndexId": userIndexId};
-      var response = await ApiClientLocalKart().httpPost(inputs, urlSubscriptionList);
+      var response = await ApiClientLocalKart().httpPost(
+        inputs,
+        urlSubscriptionList,
+      );
       var datas = json.decode(response.body.toString());
       if (datas['errorCode'].toString() == "0") {
         setState(() {
           _planBenefitsData = datas["result"] ?? {};
           _planNames = _planBenefitsData.keys.toList();
-          
+
           // Sort plans to match screenshot order: Free, Dhamaka, Dhool Dhamaka...
           _planNames.sort((a, b) {
             int getPriority(String name) {
@@ -88,6 +94,7 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
               if (name.contains('double')) return 3;
               return 4;
             }
+
             return getPriority(a).compareTo(getPriority(b));
           });
         });
@@ -139,9 +146,9 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
                       children: [
                         const SizedBox(height: 15),
                         _buildComparisonTable(),
-                        const SizedBox(height: 25),
+                        // const SizedBox(height: 5),
                         _buildUpgradeSection(),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 5),
                       ],
                     ),
                   ),
@@ -157,7 +164,8 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
   }
 
   Widget _buildComparisonTable() {
-    if (_getPriceListModel.description == null || _getPriceListModel.description!.isEmpty) {
+    if (_getPriceListModel.description == null ||
+        _getPriceListModel.description!.isEmpty) {
       return const SizedBox();
     }
 
@@ -171,7 +179,7 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
             color: Colors.black.withOpacity(0.06),
             blurRadius: 10,
             offset: const Offset(0, 4),
-          )
+          ),
         ],
       ),
       child: ClipRRect(
@@ -191,22 +199,30 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
                       width: 170,
                       child: Padding(
                         padding: EdgeInsets.only(left: 20),
-                        child: Text("Benefits",
-                            style: TextStyle(
-                                color: Color(0xFFE4287C), // Pink text
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14)),
+                        child: Text(
+                          "Benefits",
+                          style: TextStyle(
+                            color: Color(0xFFE4287C), // Pink text
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
                     ),
-                    ..._planNames.map((name) => SizedBox(
-                          width: 100,
-                          child: Text(name,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  color: Color(0xFFE4287C),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14)),
-                        )),
+                    ..._planNames.map(
+                      (name) => SizedBox(
+                        width: 120,
+                        child: Text(
+                          name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Color(0xFFE4287C),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -214,28 +230,42 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
               ..._getPriceListModel.description!.map((benefit) {
                 return Container(
                   decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey.shade100),
+                    ),
                   ),
                   child: Row(
                     children: [
                       // Benefit Title & Subtitle
                       Container(
                         width: 170,
-                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 12,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(benefit.key ?? "",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                    color: Color(0xFF333333))),
-                            if (benefit.value != null && benefit.value!.isNotEmpty)
+                            Text(
+                              benefit.key ?? "",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: Color(0xFF333333),
+                              ),
+                            ),
+                            if (benefit.value != null &&
+                                benefit.value!.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 2),
-                                child: Text(benefit.value!,
-                                    style: TextStyle(
-                                        fontSize: 11, color: Colors.grey.shade600, height: 1.2)),
+                                child: Text(
+                                  benefit.value!,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.grey.shade600,
+                                    height: 1.2,
+                                  ),
+                                ),
                               ),
                           ],
                         ),
@@ -244,7 +274,7 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
                       ..._planNames.map((planName) {
                         var val = getBenefitValue(planName, benefit.key!);
                         return SizedBox(
-                          width: 100,
+                          width: 120,
                           child: Center(child: _buildCellIconOrText(val)),
                         );
                       }),
@@ -260,28 +290,44 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
   }
 
   Widget _buildCellIconOrText(dynamic val) {
-    if (val == null) return const Text("-", style: TextStyle(color: Colors.grey));
+    if (val == null)
+      return const Text("-", style: TextStyle(color: Colors.grey));
     String sVal = val.toString();
     if (sVal.toLowerCase() == "yes" || sVal == "1") {
       return const Icon(Icons.check, color: Colors.green, size: 24);
     } else if (sVal.toLowerCase() == "no" || sVal == "0") {
       return const Icon(Icons.close, color: Colors.red, size: 24);
     }
-    return Text(sVal,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87));
+    return Text(
+      sVal,
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
+    );
   }
 
+  var planPrice = "0";
+
   Widget _buildUpgradeSection() {
-    var upgradePlans = _getPriceListModel.result?.where((p) => p.isCurrentPlan != "1").toList() ?? [];
+    var upgradePlans =
+        _getPriceListModel.result
+            ?.where((p) => p.isCurrentPlan != "1")
+            .toList() ??
+        [];
     if (upgradePlans.isEmpty) return const SizedBox();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Text("Select Plan", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: Text(
+            "Select Plan",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
         ),
         SizedBox(
           height: 110,
@@ -291,10 +337,35 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
             itemCount: upgradePlans.length,
             itemBuilder: (context, index) {
               var plan = upgradePlans[index];
-              bool isSelected = selectedPlanId == plan.planId;
+              if (plan.isCurrentPlan == "true") {
+                planPrice = plan.planPrice.toString();
+              }
+              // bool isSelected = selectedPlanId == plan.planId;
               return GestureDetector(
                 onTap: () {
-                  setState(() => selectedPlanId = plan.planId!);
+                  var currentPlanPrice = int.parse(planPrice);
+                  var selectedPlanPrice = int.parse(plan.planPrice.toString());
+
+                  if (currentPlanPrice == selectedPlanPrice) {
+                    showCommonToast(
+                      context,
+                      "",
+                      "You ${plan.planName} plan is already subscribed. Upgrade any other plans.",
+                    );
+                  }
+                  if (currentPlanPrice > selectedPlanPrice) {
+                    showCommonToast(
+                      context,
+                      "",
+                      "You can't downgrade to a lower plan when a higher plan is currently active. Please select any higher plan. (You can subscribe to a lower plan only after the current plan is expired.)",
+                    );
+                  } else {
+                    amountCalculaction(
+                      plan.planId,
+                      plan.planName,
+                      plan.planPrice,
+                    );
+                  }
                 },
                 child: Container(
                   width: 250,
@@ -304,42 +375,75 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                        color: isSelected ? const Color(0xFFE4287C) : Colors.grey.shade300, width: 2),
+                      color: plan.isCurrentPlan == "true"
+                          ? const Color(0xFFE4287C)
+                          : Colors.grey.shade300,
+                      width: 2,
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.04),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
-                      )
+                      ),
                     ],
                   ),
                   child: Row(
                     children: [
-                      Icon(isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                          color: isSelected ? const Color(0xFFE4287C) : Colors.grey, size: 26),
+                      Icon(
+                        plan.isCurrentPlan == "true"
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_off,
+                        color: plan.isCurrentPlan == "true"
+                            ? const Color(0xFFE4287C)
+                            : Colors.grey,
+                        size: 26,
+                      ),
                       const SizedBox(width: 15),
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("Upgrade To",
-                                style: TextStyle(
-                                    fontSize: 11, color: Colors.grey, fontWeight: FontWeight.bold)),
-                            Text(plan.planName ?? "",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFFE4287C))),
+                            plan.isCurrentPlan == "true"
+                                ? const Text("Current Plan")
+                                : Text(
+                                    "Upgrade To",
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                            Text(
+                              plan.planName ?? "",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Color(0xFFE4287C),
+                              ),
+                            ),
                             const SizedBox(height: 2),
                             RichText(
                               text: TextSpan(
-                                style: const TextStyle(color: Colors.black87, fontSize: 14),
+                                style: const TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 14,
+                                ),
                                 children: [
                                   TextSpan(
-                                      text: "₹ ${plan.planPrice}",
-                                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    text: "₹ ${plan.planPrice}",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                   TextSpan(
-                                      text: " / ${plan.planValidity} Days",
-                                      style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                                    text: " / ${plan.planValidity} Days",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -366,12 +470,123 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
           child: Container(
             height: 55,
             alignment: Alignment.center,
-            child: const Text("Back",
-                style: TextStyle(
-                    color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
+            child: const Text(
+              "Back",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
       ),
     );
+  }
+
+  var amount = 0.0;
+  var referaltype = "";
+
+  amountCalculaction(String? id, String? planName, String? planPrice) async {
+    Map<String, Object> inputs = {
+      "userIndexId": userIndexId,
+      "planId": "" + id.toString(),
+    };
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      var responces = await ApiClientLocalKart().httpPost(
+        inputs,
+        urlAmountcalculation,
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      var datas = json.decode(responces.body.toString());
+
+      print("the amount calsc - " + datas.toString());
+
+      if (datas['errorCode'].toString() == "0") {
+        var data;
+
+        String amounts = "";
+        try {
+          amounts = datas['amount'].toString();
+          data =
+              await showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return SubscriptinAlerts(
+                        titles: planName.toString(),
+                        amount: "₹ " + planPrice.toString(),
+                        finalAmount: double.parse(amounts),
+                      );
+                    },
+                  )
+                  as Map<String, Object>;
+        } catch (e) {
+          print("cancel title err -" + e.toString());
+        }
+
+        if (data['price'] != 0) {
+          var price = data['price'].toString();
+          amount = double.parse(price.toString());
+          print("price " + amount.toString());
+
+          var finalprice = amount.round();
+          referaltype = data['type'].toString();
+          buynowSucceApiCall(finalprice, false, id);
+        }
+      }
+      setState(() {});
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print(" loading payment success" + e.toString());
+    }
+  }
+
+  buynowSucceApiCall(int finalAmt, isFree, id) async {
+    Map<String, Object> inputs = {
+      "userIndexId": userIndexId,
+      "planId": "" + id,
+      "amount": "" + finalAmt.toString(),
+      "referalCode": referalCode,
+      "referalType": "" + referaltype,
+    };
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      var responces = await ApiClientLocalKart().httpPost(inputs, urlBuynow);
+      setState(() {
+        _isLoading = false;
+      });
+      var datas = json.decode(responces.body.toString());
+
+      print(" name is json  " + datas.toString());
+      if (datas['errorCode'].toString() == "0") {
+        // if (isFree) {
+        //   paymentSucceApiCall("");
+        // } else {
+        //   openCheckout(finalAmt * 100);
+        // }
+      }
+
+      setState(() {});
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print(" loading payment success" + e.toString());
+    }
   }
 }

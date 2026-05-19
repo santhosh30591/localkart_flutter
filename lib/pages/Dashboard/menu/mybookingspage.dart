@@ -159,9 +159,9 @@ class _TicketWidgetState extends State<TicketWidget> {
                   218,
                 ), // Specify the desired color of the line
               ),
-              const SizedBox(width: 5),
+              // const SizedBox(width: 5),
               Padding(
-                padding: const EdgeInsets.all(4.0),
+                padding: const EdgeInsets.only(left: 8.0),
                 child: SizedBox(
                   width: screenWidth / 1.65,
                   child: Column(
@@ -247,13 +247,13 @@ class _TicketWidgetState extends State<TicketWidget> {
                             children: [
                               SizedBox(
                                 height: 20,
-                                width: 20,
+                                width: 5,
                                 child: Padding(
                                   padding: const EdgeInsets.all(2.0),
                                   // child: Image.asset('assets/events.png'),
                                 ),
                               ),
-                              const SizedBox(width: 5),
+                              // const SizedBox(width: 5),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -271,7 +271,7 @@ class _TicketWidgetState extends State<TicketWidget> {
                             ],
                           ),
                           const SizedBox(height: 10),
-                          Icon(Icons.arrow_forward, color: app_theam),
+                          Icon(Icons.arrow_forward, color: app_theam,size: 23,),
                         ],
                       ),
                     ],

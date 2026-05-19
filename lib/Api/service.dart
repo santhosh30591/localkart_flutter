@@ -660,22 +660,7 @@ class HttpClients {
     }
   }
 
-  Future<Response> httpBuynow(input) async {
-    print("my url - " + urlBuynow + " data " + input.toString());
-    Response res = await post(
-      Uri.parse(urlBuynow),
-      body: input,
-      headers: {"Content-Type": "application/x-www-form-urlencoded"},
-      encoding: convert.Encoding.getByName("utf-8"),
-    );
-    if (res.statusCode == 200) {
-      return res;
-    } else {
-      showNetWorkError(context);
-      print("network connection " + res.toString());
-      return res;
-    }
-  }
+
 
   Future<Response> httpPaysuccess(input) async {
     print("my url - " + urlPaysuccess + " data " + input.toString());

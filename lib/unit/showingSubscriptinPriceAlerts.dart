@@ -5,6 +5,7 @@ import 'package:localkart/Api/api_client.dart';
 import 'package:localkart/Api/config.dart';
 import 'package:localkart/data_base/db_config.dart';
 import 'package:localkart/theams_colors.dart';
+import 'package:localkart/unit/showing.dart';
 
 class SubscriptinAlerts extends StatefulWidget {
   String titles;
@@ -63,7 +64,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
       } else {
         txt_coupon_code.text = "";
         isReferral = false;
-        showAlertDialog(datas['message'].toString());
+        showCommonToast(context, "", datas['message'].toString());
       }
       setState(() {});
     } catch (e) {
@@ -86,21 +87,28 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
   Widget build(BuildContext context) {
     update();
     return Dialog(
+      backgroundColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.topCenter,
         children: [
           Container(
-            height: 335,
+            // height: 335,
             width: double.infinity,
-            margin: EdgeInsets.all(5),
+
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.white,
+            ),
+            // margin: EdgeInsets.all(5),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(5, 30, 0, 5),
+              padding: const EdgeInsets.all(10),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    SizedBox(height: 25),
                     Text(
                       'Subscription',
                       style: TextStyle(
@@ -127,6 +135,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                           Text(": ", style: TextStyle(fontSize: 16)),
                           Expanded(
                             child: Container(
+                              margin: EdgeInsets.only(top: 4),
                               child: Text(
                                 widget.titles,
                                 style: TextStyle(fontSize: 16),
@@ -136,11 +145,13 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 5),
                     Container(
                       padding: EdgeInsets.all(5),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+
                         children: [
                           Expanded(
                             child: Container(
@@ -154,6 +165,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                           Text(": ", style: TextStyle(fontSize: 16)),
                           Expanded(
                             child: Container(
+                              margin: EdgeInsets.only(top: 4),
                               child: Text(
                                 widget.amount,
                                 style: TextStyle(fontSize: 16),
@@ -163,7 +175,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 5),
                     Container(
                       padding: EdgeInsets.all(5),
                       child: Row(
@@ -181,6 +193,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                           Text(": ", style: TextStyle(fontSize: 16)),
                           Expanded(
                             child: Container(
+                              margin: EdgeInsets.only(top: 4),
                               child: Text(
                                 "₹ " + widget.finalAmount.toString(),
                                 style: TextStyle(fontSize: 16),
@@ -190,7 +203,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 10),
                     widget.finalAmount == 0
                         ? Container(height: 1, width: 1)
                         : widget.finalAmount == 0.0
@@ -294,9 +307,9 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                               ],
                             ),
                           ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 10),
                     Container(
-                      margin: EdgeInsets.all(10),
+                      margin: EdgeInsets.all(5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -314,11 +327,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                               child: Container(
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [app_theam, Color(0xFFf4a4c8)],
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
-                                  ),
+                                  gradient: gradient_btn_lift,
                                   borderRadius: BorderRadius.circular(5),
                                   boxShadow: const [
                                     BoxShadow(
@@ -343,7 +352,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                               ),
                             ),
                           ),
-                          Container(height: 50, width: 10),
+                          Container(height: 50, width: 5),
                           Expanded(
                             child: InkWell(
                               onTap: () {
@@ -369,11 +378,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                               child: Container(
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [app_theam, Color(0xFFf4a4c8)],
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
-                                  ),
+                                  gradient: gradient_btn_rigth,
                                   borderRadius: BorderRadius.circular(5),
                                   boxShadow: [
                                     BoxShadow(
@@ -412,7 +417,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
               backgroundColor: Colors.white,
               radius: 35,
               child: Image.asset(
-                "assets/logo_removebg.png",
+                "assets/logo_with_name.png",
                 height: 50,
                 width: 50,
               ),
@@ -453,27 +458,6 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
               : Container(height: 335),
         ],
       ),
-    );
-  }
-
-  showAlertDialog(String msg) {
-    Widget noButton = TextButton(
-      child: Text("Ok"),
-      onPressed: () {
-        Navigator.pop(context);
-        // Navigator.pop(context);
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(content: Text(msg), actions: [noButton]);
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
     );
   }
 }

@@ -137,7 +137,7 @@ class _AddServicesAlerts extends State<AddServicesAlerts> {
                   backgroundColor: Colors.white,
                   radius: 35,
                   child: Image.asset(
-                    "assets/logo_removebg.png",
+                    "assets/logo_with_name.png",
                     height: 50,
                     width: 50,
                   ),
