@@ -25,7 +25,7 @@ class SubscriptinAlerts extends StatefulWidget {
 
 class _SubscriptinAlerts extends State<SubscriptinAlerts> {
   var txt_coupon_code = TextEditingController();
-  bool isReferral = false;
+  bool isReferral =  false;
   String referralCode = "";
   String referraltype = "";
   String referralprice = "";

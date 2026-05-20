@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'package:flutter/material.dart';
+import 'package:flutter_cashfree_pg_sdk/api/cfpaymentgateway/cfpaymentgatewayservice.dart';
 import 'package:localkart/Api/api_client.dart';
 import 'package:localkart/Api/config.dart';
 import 'package:localkart/data_base/db_config.dart';
 import 'package:localkart/model/sub_get_price.dart';
+import 'package:localkart/pages/payment/cashfree.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/action_bar.dart';
 import 'package:localkart/unit/showing.dart';
 import 'package:localkart/unit/showingSubscriptinPriceAlerts.dart';
+import 'package:localkart/unit/showingTransSuccessAlerts.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class SubscriptionPlansList extends StatefulWidget {
@@ -553,11 +556,84 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
     }
   }
 
-  buynowSucceApiCall(int finalAmt, isFree, id) async {
+  buynowSucceApiCall(int finalAmt, isFree, planId) async {
     Map<String, Object> inputs = {
       "userIndexId": userIndexId,
-      "planId": "" + id,
+      "planId": "" + planId,
       "amount": "" + finalAmt.toString(),
+      "referalCode": referalCode,
+      "referalType": "" + referaltype,
+    };
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      var responces = await ApiClientLocalKart().httpPost(inputs, urlBuynow);
+      setState(() {
+        _isLoading = false;
+      });
+      var datas = json.decode(responces.body.toString());
+
+      print(" type isFree $isFree name is json  " + datas.toString());
+      if (datas['errorCode'].toString() == "0") {
+        if (isFree) {
+          paymentSucceApiCall("", planId);
+        } else {
+          checkout("", planId, finalAmt.toString());
+        }
+      }
+
+      setState(() {});
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print(" loading payment success" + e.toString());
+    }
+  }
+
+  paymentSucceApiCall(String tid, planId) async {
+    Map<String, Object> inputs = {
+      "userIndexId": userIndexId,
+      "planId": "" + planId,
+      "amount": "" + amount.toString(),
+      "referalCode": referalCode,
+      "referalType": "" + referaltype,
+      "payment_id": tid,
+    };
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      var responces = await ApiClientLocalKart().httpPost(
+        inputs,
+        urlPaymentsuccess,
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      var datas = json.decode(responces.body.toString());
+
+      print(" paymentSucceApiCall json  " + datas.toString());
+      if (datas['errorCode'].toString() == "0") {
+        transAlertProcess(true, "Payment Successfully Completed.", "Free");
+      }
+      setState(() {});
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print(" loading payment success" + e.toString());
+    }
+  }
+
+  checkout(String tid, planId, amount) async {
+    Map<String, Object> inputs = {
+      "userIndexId": userIndexId,
+      "planId": "" + planId,
+      "amount": "" + amount.toString(),
       "referalCode": referalCode,
       "referalType": "" + referaltype,
     };
@@ -574,19 +650,55 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
 
       print(" name is json  " + datas.toString());
       if (datas['errorCode'].toString() == "0") {
-        // if (isFree) {
-        //   paymentSucceApiCall("");
-        // } else {
-        //   openCheckout(finalAmt * 100);
-        // }
-      }
+        var response =
+            await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CashFreePaymentPage(
+                      setOrderId: datas['order_id'].toString(),
+                      setPaymentSessionId: datas['session_id'].toString(),
+                      environment: datas['environment'].toString(),
+                    ),
+                  ),
+                )
+                as Map<String, String>;
 
+        print("result $response");
+
+        if (response != null) {
+          if (response['status'].toString() == "success") {
+            paymentSucceApiCall(response['orderId'].toString(), planId);
+          } else if (response['status'].toString() == "cancel") {
+          } else {
+            transAlertProcess(false, response['message'].toString(), "Free");
+          }
+        }
+      }
       setState(() {});
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
       print(" loading payment success" + e.toString());
+    }
+  }
+
+  transAlertProcess(tyes, msg, title) async {
+    var continues =
+        await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return TransSuccessAlerts(type: tyes, msg: msg);
+              },
+            )
+            as bool;
+    if (continues == true) {
+      Map<String, String> maps = {
+        "amount": "" + amount.toString(),
+        "title": "" + title,
+      };
+      // Navigator.pop(context);
+      Navigator.pop(context, maps);
     }
   }
 }

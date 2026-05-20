@@ -19,20 +19,29 @@ class _TransSuccessAlerts extends State<TransSuccessAlerts> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
+      backgroundColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.topCenter,
         children: [
           Container(
             height: 180,
+
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              color: Colors.white,
+            ),
             width: double.infinity,
-            margin: EdgeInsets.all(5),
+            // margin: EdgeInsets.all(5),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(5, 45, 0, 5),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
+
                 children: [
+                  SizedBox(height: 30),
+
                   widget.type == true
                       ? Text(
                           widget.msg,
@@ -68,12 +77,8 @@ class _TransSuccessAlerts extends State<TransSuccessAlerts> {
                             child: Container(
                               height: 50,
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [app_theam, Color(0xFFf4a4c8)],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                ),
-                                borderRadius: BorderRadius.circular(5),
+                                gradient: app_gradient,
+                                borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black12,
