@@ -87,13 +87,32 @@ class _TagsPhotosUpdateFormState extends State<TagsPhotosUpdate> {
       }
       if (pickedFile != null) {
         imagepath = await cropImage(pickedFile.path);
-        imagefile = File(imagepath);
+
         setState(() {});
+
+        if (pickedFile.path != null) {
+          imagepath = pickedFile.path.toString();
+          print(" image file 123" + imagepath.toString());
+          // imagefile = pickedFile;
+
+          Navigator.pop(context, "" + pickedFile.path.toString());
+
+          ImageDetails imgdetails = ImageDetails();
+
+          imgdetails.imageIndexId =
+              (getBusiness.result!.imageDetails!.length + 1);
+          imgdetails.imageUrl = imagepath;
+          getBusiness.result!.imageDetails!.add(imgdetails);
+
+          setState(() {});
+        } else {
+          print("Image is not cropped.");
+        }
       } else {
         print("No image is selected.");
       }
     } catch (e) {
-      print("error while picking file.");
+      print("error while picking file. e $e");
     }
   }
 
@@ -324,11 +343,7 @@ class _TagsPhotosUpdateFormState extends State<TagsPhotosUpdate> {
                                 width: 80,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [app_theam, Color(0xFFf4a4c8)],
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
-                                  ),
+                                  gradient: app_gradient,
                                   borderRadius: BorderRadius.circular(8),
                                   boxShadow: const [
                                     BoxShadow(
@@ -418,11 +433,7 @@ class _TagsPhotosUpdateFormState extends State<TagsPhotosUpdate> {
                       width: 120,
                       height: 40,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [app_theam, Color(0xFFf4a4c8)],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                        ),
+                        gradient: app_gradient,
                         borderRadius: BorderRadius.circular(5),
                         boxShadow: const [
                           BoxShadow(

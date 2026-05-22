@@ -133,7 +133,9 @@ class _FetchBalanceDetails extends State<FetchBalanceDetails> {
                     ),
                     Expanded(
                       child: Text(
-                        operatorInfo.name.toString(),
+                        operatorInfo.name.toString() +
+                            "isLoading " +
+                            isLoading.toString(),
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 14,
@@ -511,14 +513,13 @@ class _FetchBalanceDetails extends State<FetchBalanceDetails> {
       url = BillPaymentBaseURL + url;
       var responce = await ApiClient(context).httpPost(input, url);
       var datas = json.decode(responce.body.toString());
+      context.read<BillPaymentProvider>().isUiLoading(false);
       if (datas['errorCode'] != 0) {
         ShowToastdur(context, datas['message']);
       } else {
         blanaceConfirmResponseModel = BlanaceConfirmResponseModel.fromJson(
           datas,
         );
-
-        context.read<BillPaymentProvider>().isUiLoading(false);
 
         try {
           var result = await Navigator.pushNamed(

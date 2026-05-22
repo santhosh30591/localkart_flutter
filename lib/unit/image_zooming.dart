@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:localkart/theams_colors.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ZoomingImages extends StatefulWidget {
   String title;
   String image;
 
   ZoomingImages({Key? key, required this.title, required this.image})
-      : super(key: key);
+    : super(key: key);
 
   @override
   _ZoomingImages createState() => _ZoomingImages();
@@ -26,43 +27,40 @@ class _ZoomingImages extends State<ZoomingImages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: InteractiveViewer(
         child: Container(
-            color: Colors.white,
-            height: double.infinity,
-            width: double.infinity,
-            child: widget.image.contains("http")
-                ? Image.network(
-                    widget.image,
-                    // fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
+          color: Colors.white,
+          height: double.infinity,
+          width: double.infinity,
+          child: widget.image.contains("http")
+              ? Image.network(
+                  widget.image,
+                  // fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
 
-                      return Container(
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                        image: AssetImage("assets/loading.gif"),
-                      )));
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        "assets/logo_with_name1.png",
-                      );
-                    },
-                  )
-                : Image.file(
-                    File(widget.image),
-                    // fit: BoxFit.cover,
-                  )),
+                    return Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/loading.gif"),
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset("assets/logo_with_name1.png");
+                  },
+                )
+              : Image.file(
+                  File(widget.image),
+                  // fit: BoxFit.cover,
+                ),
+        ),
       ),
     );
   }
 }
-
-
 
 Future<String> cropImage(String path) async {
   try {
@@ -109,4 +107,51 @@ Future<String> cropImage(String path) async {
     print("Cropped without file  error path : " + path);
     return path;
   }
+}
+
+Widget eventImageLoading(imageUrl, bookingAllow) {
+  return Image.network(
+    imageUrl.toString(),
+    fit: BoxFit.cover,
+
+    color: bookingAllow == 0 ? Colors.grey : null,
+    colorBlendMode: bookingAllow == 0 ? BlendMode.saturation : null,
+
+    loadingBuilder: (context, child, loadingProgress) {
+      if (loadingProgress == null) return child;
+      return Container(
+        height: 160,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/loading.gif"),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    },
+    errorBuilder: (context, error, stackTrace) {
+      return Container(
+        height: 160,
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Column(
+            children: [
+              Container(
+                height: 160,
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(10.0),
+                    bottomRight: Radius.circular(10),
+                  ),
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

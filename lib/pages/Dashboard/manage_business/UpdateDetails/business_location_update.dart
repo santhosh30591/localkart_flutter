@@ -4,6 +4,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:localkart/data_base/db_config.dart';
 import 'package:localkart/model/businessModel/get_business_details.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/action_bar.dart';
@@ -117,6 +118,9 @@ class _LocationMapsDetailsUpdate extends State<LocationMapsDetailsUpdate> {
     }
   }
 
+  var lat = 0.0;
+  var longs = 0.0;
+
   @override
   void initState() {
     getBusiness = widget.getBusiness;
@@ -130,13 +134,18 @@ class _LocationMapsDetailsUpdate extends State<LocationMapsDetailsUpdate> {
     current_select_address = getBusiness.result!.locationDetails!.address
         .toString();
 
-    var lat = double.parse(
-      getBusiness.result!.locationDetails!.latitude.toString(),
-    );
+    try {
+      lat = double.parse(
+        getBusiness.result!.locationDetails!.latitude.toString(),
+      );
 
-    var longs = double.parse(
-      getBusiness.result!.locationDetails!.longitude.toString(),
-    );
+      longs = double.parse(
+        getBusiness.result!.locationDetails!.longitude.toString(),
+      );
+    } catch (e) {
+      print("Location update err $e ");
+      loadingLocalLocation();
+    }
 
     _center = LatLng(lat, longs);
 
@@ -202,290 +211,295 @@ class _LocationMapsDetailsUpdate extends State<LocationMapsDetailsUpdate> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
-      child:
-
-          actionBarTopBottomView("My Business", context,
-      Scaffold(
-
-        body: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: bussiness_select_tab_height,
-                      color: bussiness_select_tab_colors,
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: bussiness_select_tab_height,
-                      color: bussiness_select_tab_colors,
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: bussiness_select_tab_height,
-                      color: bussiness_select_tab_colors,
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: bussiness_select_tab_height,
-                      color: bussiness_select_tab_colors,
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: bussiness_select_tab_height,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: bussiness_select_tab_height,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Container(
-                margin: EdgeInsets.all(10),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    "4.Location & Map Details.",
-                    style: TextStyle(color: app_theam, fontSize: 18),
-                  ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(
-                  left: 10,
-                  right: 10,
-                  bottom: 10,
-                  top: 5,
-                ),
-                child: TextField(
-                  autocorrect: true,
-                  controller: _txtControlSearch,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    focusColor: Colors.grey,
-                    border: InputBorder.none,
-                    prefixIcon: Icon(Icons.location_pin, color: Colors.grey),
-                    filled: true,
-                    fillColor: Colors.white70,
-                    enabledBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    suffixIcon: SizedBox(
-                      width: 60,
-                      height: 45,
-                      child: Row(
-                        children: [
-                          InkWell(
-                            child: const Icon(
-                              Icons.close,
-                              color: Colors.black45,
-                            ),
-                            onTap: () {
-                              setState(() {});
-                              placeDetails = [];
-                              _txtControlSearch.text = "";
-                            },
-                          ),
-                          const SizedBox(width: 5),
-                          InkWell(
-                            child: Icon(
-                              mapTypes != MapType.normal
-                                  ? Icons.map_sharp
-                                  : Icons.satellite,
-                              color: Colors.black45,
-                            ),
-                            onTap: () {
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              setState(() {
-                                if (mapTypes == MapType.hybrid) {
-                                  mapTypes = MapType.normal;
-                                  print("ste");
-                                } else {
-                                  mapTypes = MapType.hybrid;
-                                  print("hybrid");
-                                }
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    hintText: "Click to search address",
-                    hintStyle: const TextStyle(color: Colors.grey),
-                  ),
-                  onSubmitted: (value) {
-                    if (value.length >= 1) {
-                      getLocation(value);
-                    } else {
-                      placeDetails = [];
-                    }
-
-                    FocusScope.of(context).requestFocus();
-                    // To do
-                  },
-                ),
-              ),
-              Expanded(
-                child: Stack(
+      child: actionBarTopBottomView(
+        "My Business",
+        context,
+        Scaffold(
+          body: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      margin: EdgeInsets.only(bottom: 40),
-                      child: GoogleMap(
-                        mapType: mapTypes,
-                        myLocationEnabled: true,
-                        myLocationButtonEnabled: true,
-                        initialCameraPosition: _kGooglePlex,
-                        onTap: (latLng) {
-                          setState(() {
-                            _center = LatLng(latLng.latitude, latLng.longitude);
-                            GetAddressFromLatLong(
-                              latLng.latitude,
-                              latLng.longitude,
-                            );
-                          });
-                        },
-                        onMapCreated: (GoogleMapController controller) {
-                          _controller.complete(controller);
-                        },
-                        markers: <Marker>{
-                          Marker(
-                            draggable: true,
-                            markerId: const MarkerId("1"),
-                            position: _center,
-                            icon: BitmapDescriptor.defaultMarker,
-                            // infoWindow: const InfoWindow(
-                            //   title: 'Usted está aquí',
-                            // ),
-                          ),
-                        },
+                    Expanded(
+                      child: Container(
+                        height: bussiness_select_tab_height,
+                        color: bussiness_select_tab_colors,
                       ),
                     ),
-                    Positioned(
-                      child: placeDetails == 0
-                          ? Container(height: 1, width: 1)
-                          : Container(
-                              color: Colors.white,
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: placeDetails.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return _itemItems(context, index);
-                                },
-                              ),
-                            ),
+                    Expanded(
+                      child: Container(
+                        height: bussiness_select_tab_height,
+                        color: bussiness_select_tab_colors,
+                      ),
                     ),
-                    Positioned(
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          width: double.infinity,
-                          color: app_theam[200],
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            current_select_address,
-                            maxLines: 2,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                    Expanded(
+                      child: Container(
+                        height: bussiness_select_tab_height,
+                        color: bussiness_select_tab_colors,
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: bussiness_select_tab_height,
+                        color: bussiness_select_tab_colors,
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: bussiness_select_tab_height,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: bussiness_select_tab_height,
+                        color: Colors.white,
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ),
-        bottomNavigationBar: Container(
-
-          color: Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    height: 50,
-                    margin: EdgeInsets.only(right: 1),
-                    decoration: BoxDecoration(gradient: gradient_btn_lift),
-
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Previous",
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                        ),
-                      ],
+                SizedBox(height: 10),
+                Container(
+                  margin: EdgeInsets.all(10),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "4.Location & Map Details.",
+                      style: TextStyle(color: app_theam, fontSize: 18),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Map<String, Object> location = {
-                      "address": "" + current_select_address.toString(),
-                      "latitude": "" + _center.latitude.toString(),
-                      "longitude": "" + _center.longitude.toString(),
-                    };
-                    register.addAll(location);
-                    print("location " + register.toString());
-
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => TagsPhotosUpdate(
-                          getBusiness: getBusiness,
-                          register: register,
+                Container(
+                  margin: const EdgeInsets.only(
+                    left: 10,
+                    right: 10,
+                    bottom: 10,
+                    top: 5,
+                  ),
+                  child: TextField(
+                    autocorrect: true,
+                    controller: _txtControlSearch,
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      focusColor: Colors.grey,
+                      border: InputBorder.none,
+                      prefixIcon: Icon(Icons.location_pin, color: Colors.grey),
+                      filled: true,
+                      fillColor: Colors.white70,
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      suffixIcon: SizedBox(
+                        width: 60,
+                        height: 45,
+                        child: Row(
+                          children: [
+                            InkWell(
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.black45,
+                              ),
+                              onTap: () {
+                                setState(() {});
+                                placeDetails = [];
+                                _txtControlSearch.text = "";
+                              },
+                            ),
+                            const SizedBox(width: 5),
+                            InkWell(
+                              child: Icon(
+                                mapTypes != MapType.normal
+                                    ? Icons.map_sharp
+                                    : Icons.satellite,
+                                color: Colors.black45,
+                              ),
+                              onTap: () {
+                                FocusScope.of(
+                                  context,
+                                ).requestFocus(FocusNode());
+                                setState(() {
+                                  if (mapTypes == MapType.hybrid) {
+                                    mapTypes = MapType.normal;
+                                    print("ste");
+                                  } else {
+                                    mapTypes = MapType.hybrid;
+                                    print("hybrid");
+                                  }
+                                });
+                              },
+                            ),
+                          ],
                         ),
                       ),
-                    );
+                      hintText: "Click to search address",
+                      hintStyle: const TextStyle(color: Colors.grey),
+                    ),
+                    onSubmitted: (value) {
+                      if (value.length >= 1) {
+                        getLocation(value);
+                      } else {
+                        placeDetails = [];
+                      }
 
-                    // Navigator.of(context).pushNamed(root_business_tags);
-                  },
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(gradient: gradient_btn_rigth),
-
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Next",
-                          style: TextStyle(color: Colors.white, fontSize: 15),
+                      FocusScope.of(context).requestFocus();
+                      // To do
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 40),
+                        child: GoogleMap(
+                          mapType: mapTypes,
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: true,
+                          initialCameraPosition: _kGooglePlex,
+                          onTap: (latLng) {
+                            setState(() {
+                              _center = LatLng(
+                                latLng.latitude,
+                                latLng.longitude,
+                              );
+                              GetAddressFromLatLong(
+                                latLng.latitude,
+                                latLng.longitude,
+                              );
+                            });
+                          },
+                          onMapCreated: (GoogleMapController controller) {
+                            _controller.complete(controller);
+                          },
+                          markers: <Marker>{
+                            Marker(
+                              draggable: true,
+                              markerId: const MarkerId("1"),
+                              position: _center,
+                              icon: BitmapDescriptor.defaultMarker,
+                              // infoWindow: const InfoWindow(
+                              //   title: 'Usted está aquí',
+                              // ),
+                            ),
+                          },
                         ),
-                      ],
+                      ),
+                      Positioned(
+                        child: placeDetails == 0
+                            ? Container(height: 1, width: 1)
+                            : Container(
+                                color: Colors.white,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: placeDetails.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                        return _itemItems(context, index);
+                                      },
+                                ),
+                              ),
+                      ),
+                      Positioned(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            width: double.infinity,
+                            color: app_theam[200],
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                              current_select_address,
+                              maxLines: 2,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          bottomNavigationBar: Container(
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      height: 50,
+                      margin: EdgeInsets.only(right: 1),
+                      decoration: BoxDecoration(gradient: gradient_btn_lift),
+
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Previous",
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Map<String, Object> location = {
+                        "address": "" + current_select_address.toString(),
+                        "latitude": "" + _center.latitude.toString(),
+                        "longitude": "" + _center.longitude.toString(),
+                      };
+                      register.addAll(location);
+                      print("location " + register.toString());
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => TagsPhotosUpdate(
+                            getBusiness: getBusiness,
+                            register: register,
+                          ),
+                        ),
+                      );
+
+                      // Navigator.of(context).pushNamed(root_business_tags);
+                    },
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(gradient: gradient_btn_rigth),
+
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Next",
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _itemItems(BuildContext context, int index) {
@@ -525,6 +539,12 @@ class _LocationMapsDetailsUpdate extends State<LocationMapsDetailsUpdate> {
         },
       ),
     );
+  }
+
+  void loadingLocalLocation() async {
+    lat = double.parse(await DBHelper().getLocationDetailsDB(true));
+    longs = double.parse(await DBHelper().getLocationDetailsDB(false));
+    setState(() {});
   }
 }
 

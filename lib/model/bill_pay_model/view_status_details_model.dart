@@ -3,7 +3,14 @@ class ViewStatusdetailsModel {
   String? message;
   Result? result;
 
-  ViewStatusdetailsModel({this.errorCode, this.message, this.result});
+  bool? rewards;
+
+  ViewStatusdetailsModel({
+    this.errorCode,
+    this.message,
+    this.result,
+    this.rewards,
+  });
 
   ViewStatusdetailsModel.fromJson(Map<String, dynamic> json) {
     errorCode = json['errorCode'];
@@ -17,6 +24,7 @@ class ViewStatusdetailsModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['errorCode'] = this.errorCode;
     data['message'] = this.message;
+    data['rewards'] = this.rewards;
     if (this.result != null) {
       data['result'] = this.result!.toJson();
     }
@@ -81,17 +89,61 @@ class Reward {
   int? errorCode;
   String? message;
 
-  Reward({this.errorCode, this.message});
+  RewardDetails? result;
+
+  Reward({this.errorCode, this.message, this.result});
 
   Reward.fromJson(Map<String, dynamic> json) {
     errorCode = json['errorCode'];
     message = json['Message'];
+
+    result = json['result'] != null
+        ? new RewardDetails.fromJson(json['result'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['errorCode'] = this.errorCode;
     data['Message'] = this.message;
+    if (this.result != null) {
+      data['result'] = this.result!.toJson();
+    }
+
+    return data;
+  }
+}
+
+class RewardDetails {
+  int? id;
+  String? reward_type;
+  String? reward_title;
+  String? reward_validity;
+  String? logo;
+
+  RewardDetails({
+    this.id,
+    this.reward_type,
+    this.reward_title,
+    this.reward_validity,
+    this.logo,
+  });
+
+  RewardDetails.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    reward_type = json['reward_type'];
+    reward_title = json['reward_title'];
+    reward_validity = json['reward_validity'];
+    logo = json['logo'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['reward_type'] = this.reward_type;
+    data['reward_title'] = this.reward_title;
+    data['reward_validity'] = this.reward_validity;
+    data['logo'] = this.logo;
     return data;
   }
 }

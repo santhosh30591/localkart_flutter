@@ -26,25 +26,24 @@ class _TransSuccessAlerts extends State<TransSuccessAlerts> {
         alignment: Alignment.topCenter,
         children: [
           Container(
-            height: 180,
-
+            // height: 200,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(10)),
               color: Colors.white,
             ),
             width: double.infinity,
-            // margin: EdgeInsets.all(5),
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 30),
 
                   widget.type == true
                       ? Text(
                           widget.msg,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.green,
@@ -53,6 +52,7 @@ class _TransSuccessAlerts extends State<TransSuccessAlerts> {
                         )
                       : Text(
                           widget.msg,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.red,

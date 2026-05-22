@@ -35,6 +35,8 @@ class _BusinessServicesUpdateFormState extends State<BusinessServicesUpdate> {
 
   late List<String> listImages;
 
+  var isFirstTime = true;
+
   @override
   void initState() {
     listImages = widget.listImages;
@@ -51,9 +53,13 @@ class _BusinessServicesUpdateFormState extends State<BusinessServicesUpdate> {
       );
 
       for (int i = 0; i < getBusiness.result!.serviceDetails!.length; i++) {
+        isFirstTime = false;
         listServises.add(
           getBusiness.result!.serviceDetails![i].serviceName.toString(),
         );
+      }
+      if (isFirstTime) {
+        value = false;
       }
     } catch (e) {
       print(" empty datas - serviceDetails" + e.toString());
@@ -175,12 +181,13 @@ class _BusinessServicesUpdateFormState extends State<BusinessServicesUpdate> {
         "My Business",
         context,
         Scaffold(
+          backgroundColor: Colors.white,
           body: Stack(
             clipBehavior: Clip.none,
             alignment: Alignment.topCenter,
             children: [
               SingleChildScrollView(
-                child: Center(
+                child: Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -237,6 +244,19 @@ class _BusinessServicesUpdateFormState extends State<BusinessServicesUpdate> {
                         ),
                       ),
                       Container(
+                        // height: 350,
+                        margin: EdgeInsets.all(15),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: listServises.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return _itemList(context, index);
+                          },
+                        ),
+                      ),
+                      Container(
                         alignment: Alignment.topLeft,
                         margin: EdgeInsets.only(
                           left: 15,
@@ -244,7 +264,7 @@ class _BusinessServicesUpdateFormState extends State<BusinessServicesUpdate> {
                           bottom: 15,
                           top: 15,
                         ),
-                        child: listServises.length != 0
+                        child: isFirstTime != true
                             ? Container(height: 1, width: 1)
                             : Container(
                                 height: 40,
@@ -255,14 +275,7 @@ class _BusinessServicesUpdateFormState extends State<BusinessServicesUpdate> {
                                     child: Container(
                                       width: 180,
                                       decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            app_theam,
-                                            Color(0xFFf4a4c8),
-                                          ],
-                                          begin: Alignment.bottomCenter,
-                                          end: Alignment.topCenter,
-                                        ),
+                                        gradient: app_gradient,
                                         borderRadius: BorderRadius.circular(8),
                                         boxShadow: [
                                           BoxShadow(
@@ -289,16 +302,6 @@ class _BusinessServicesUpdateFormState extends State<BusinessServicesUpdate> {
                                 ),
                               ),
                       ),
-                      Container(
-                        height: 350,
-                        margin: EdgeInsets.all(15),
-                        child: ListView.builder(
-                          itemCount: listServises.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return _itemList(context, index);
-                          },
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -324,7 +327,9 @@ class _BusinessServicesUpdateFormState extends State<BusinessServicesUpdate> {
                             value: this.value,
                             onChanged: (bool? value) {
                               setState(() {
-                                this.value = true;
+                                if (isFirstTime) {
+                                  this.value = !this.value;
+                                }
                               });
                             },
                           ), //Checkbox/Che
@@ -385,7 +390,9 @@ class _BusinessServicesUpdateFormState extends State<BusinessServicesUpdate> {
                       Expanded(
                         child: InkWell(
                           onTap: () {
-                            if (value) {
+                            if (listServises.length == 0) {
+                              ShowToast(context, "Please add services details");
+                            } else if (value) {
                               updateBusinessProfile();
                             } else {
                               ShowToast(

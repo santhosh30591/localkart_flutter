@@ -142,7 +142,11 @@ class Events {
   String? district;
   String? image;
   int? bookingAllow;
+
   String? closedMessage;
+  int? is_video;
+  String? video_url;
+  bool isPlayingIcons = true;
 
   Events({
     this.id,
@@ -156,6 +160,8 @@ class Events {
     this.image,
     this.bookingAllow,
     this.closedMessage,
+    this.is_video,
+    this.video_url,
   });
 
   Events.fromJson(Map<String, dynamic> json) {
@@ -170,6 +176,8 @@ class Events {
     image = json['image'];
     bookingAllow = json['booking_allow'];
     closedMessage = json['closed_message'];
+    is_video = json['is_video'];
+    video_url = json['video_url'];
   }
 
   Map<String, dynamic> toJson() {
@@ -185,6 +193,8 @@ class Events {
     data['image'] = this.image;
     data['booking_allow'] = this.bookingAllow;
     data['closed_message'] = this.closedMessage;
+    data['is_video'] = this.is_video;
+    data['video_url'] = this.video_url;
     return data;
   }
 }

@@ -9,7 +9,6 @@ import 'package:localkart/pages/autho/login_otp.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/buttons.dart';
 import 'package:localkart/unit/showing.dart';
-import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);

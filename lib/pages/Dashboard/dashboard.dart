@@ -19,6 +19,7 @@ import 'package:localkart/pages/Dashboard/nav.dart';
 import 'package:localkart/pages/events/bookNow.dart';
 import 'package:localkart/pages/events/eventdetailspage.dart';
 import 'package:localkart/theams_colors.dart';
+import 'package:localkart/unit/image_zooming.dart';
 import 'package:localkart/unit/showing.dart';
 import 'package:localkart/unit/showingLocationAletrs.dart';
 import 'package:marquee/marquee.dart';
@@ -280,7 +281,7 @@ class _DashboardPage extends State<DashboardPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "LocalKart",
+                                      "LocalKart ",
                                       style: TextStyle(
                                         fontSize: 18,
                                         color: Colors.white,
@@ -374,7 +375,11 @@ class _DashboardPage extends State<DashboardPage> {
                       color: Colors.white,
                       height: double.infinity,
                       width: MediaQuery.of(context).size.width,
-                      child: bottomSelectTabView(),
+                      child:
+                          dashboardModel.errorCode != null &&
+                              dashboardModel.errorCode == 2
+                          ? networkIssue()
+                          : bottomSelectTabView(),
                     ),
 
                     bottomNavigationBar: Column(
@@ -1401,8 +1406,6 @@ class _DashboardPage extends State<DashboardPage> {
               children: [
                 GridView.count(
                   cacheExtent: 300,
-
-                  // Preload 500px above/below
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
                   physics: const NeverScrollableScrollPhysics(),
@@ -1663,41 +1666,29 @@ class _DashboardPage extends State<DashboardPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(13),
                         ),
-                        child: Image.network(
-                          ticket_next_events[index].image!.toString(),
-                          fit: BoxFit.cover,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            eventImageLoading(
+                              ticket_next_events[index].image,
+                              ticket_next_events[index].bookingAllow,
+                            ),
+                            ticket_next_events[index].is_video == 1 &&
+                                    ticket_next_events[index].isPlayingIcons
+                                ? InkWell(
+                                    onTap: () {
+                                      ticket_next_events[index].isPlayingIcons =
+                                          false;
+                                      setState(() {});
+                                    },
 
-                          color: ticket_next_events[index].bookingAllow == 0
-                              ? Colors.grey
-                              : null,
-                          colorBlendMode:
-                              ticket_next_events[index].bookingAllow == 0
-                              ? BlendMode.saturation
-                              : null,
-
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              height: 160,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage("assets/loading.gif"),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 160,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage("assets/loading.gif"),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          },
+                                    child: Container(
+                                      height: 40,
+                                      child: Image.asset("assets/ic_play.png"),
+                                    ),
+                                  )
+                                : Container(),
+                          ],
                         ),
                       ),
                     ),

@@ -2,6 +2,14 @@ import 'dart:io';
 
 import 'package:localkart/theams_colors.dart';
 
+class MyHttpOverridesTime extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..connectionTimeout = const Duration(seconds: 10); // Global timeout
+  }
+}
+
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -15,9 +23,13 @@ var isUat = true;
 
 var BaseURL = "localkart.app";
 
-var subBase = !isLiveMode
+var subBase = isLiveMode
     ? "https://www.$BaseURL/portal/uatapi"
     : "https://www.$BaseURL/portal/api";
+
+var BillPaymentBaseURL = isLiveMode
+    ? "https://billpaynxt.in/portal/uatapi/"
+    : "https://billpaynxt.in/portal/billapi/";
 
 var urlLogin = "$subBase/login";
 var urlServiceCategories = "$subBase/servicecategories";
@@ -129,13 +141,9 @@ var urlBusinessTerms =
 var urlBusinessSupport = "https://localkart.app/help-support.php";
 var urlFranchise = "https://localkart.app/portal/franchise/index";
 
-var BillPaymentBaseURL = !isLiveMode
-    ? "https://billpaynxt.in/portal/uatapi/"
-    : "https://billpaynxt.in/portal/billapi/";
-
 var urlBillpayList = "https://billpaynxt.in/portal/api/ps_home_categories";
 var url_fetch_operators = BillPaymentBaseURL + "fetch_operators";
-var url_fetch_billinfo = BillPaymentBaseURL + "fetch_billinfo";
+var url_fetch_billinfo = "${BillPaymentBaseURL}fetch_billinfo";
 var url_bill_status = BillPaymentBaseURL + "bill_status";
 var url_transaction_details = BillPaymentBaseURL + "transaction_details";
 

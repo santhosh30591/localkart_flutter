@@ -136,7 +136,9 @@ class HomePageProvider with ChangeNotifier, DiagnosticableTreeMixin {
         notifyListeners();
       }
     } catch (e) {
-      print("ApiClient encode err  - $e");
+      dashboardModel.errorCode = 2;
+
+      print("ApiClient Dashboard encode err  - $e");
       isLoading = false;
       notifyListeners();
     }
@@ -192,7 +194,7 @@ class HomePageProvider with ChangeNotifier, DiagnosticableTreeMixin {
     try {
       await ApiClient(context).httpPost(input, url);
     } catch (e) {
-      print("ApiClient encode err  - $e");
+      print("ApiClient update devices encode err  - $e");
     }
     isLoading = false;
     notifyListeners();

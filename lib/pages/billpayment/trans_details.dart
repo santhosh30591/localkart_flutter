@@ -89,22 +89,54 @@ class _TransStatusDetails extends State<TransStatusDetails> {
           return actionBarTopBottomViewBharathConnect(
             title,
             context,
-            Container(
-              height: double.infinity,
-              width: double.infinity,
-              color: Colors.white,
-              child: provider.isLoading
-                  ? TempLoadingStatus(isLoading: provider.isLoading)
-                  : SingleChildScrollView(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: provider.viewStatusdetailsModel.errorCode == 0
-                            ? viewStatusHeadder(provider)
-                            : Center(
-                                child: Text(
-                                  provider.viewStatusdetailsModel.message!,
+
+            Scaffold(
+              body: Container(
+                height: double.infinity,
+                width: double.infinity,
+                color: Colors.white,
+                child: provider.isLoading
+                    ? TempLoadingStatus(isLoading: provider.isLoading)
+                    : SingleChildScrollView(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: provider.viewStatusdetailsModel.errorCode == 0
+                              ? viewStatusHeadder(provider)
+                              : Center(
+                                  child: Text(
+                                    provider.viewStatusdetailsModel.message!,
+                                  ),
                                 ),
-                              ),
+                        ),
+                      ),
+              ),
+              bottomNavigationBar: viewStatusdetailsModel.rewards == false
+                  ? Container(height: 1)
+                  : InkWell(
+                      onTap: () {
+                        try {
+                          print(
+                            "name " +
+                                viewStatusdetailsModel
+                                    .result!
+                                    .reward!
+                                    .result!
+                                    .reward_title
+                                    .toString(),
+                          );
+                        } catch (e) {
+                          print("error $e");
+                        }
+                      },
+                      child: Container(
+                        height: 50,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(gradient: app_gradient),
+
+                        child: Text(
+                          "OK",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
                       ),
                     ),
             ),

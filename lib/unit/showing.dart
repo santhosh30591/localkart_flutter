@@ -36,6 +36,10 @@ Widget fullViewLoadingUi(bool isLoading) {
       : Container();
 }
 
+Widget networkIssue() {
+  return Center(child: Text("Network issue tri again alter."));
+}
+
 void ShowToastdur(BuildContext context, String msg) {
   final scaffold = ScaffoldMessenger.of(context);
   scaffold.showSnackBar(
