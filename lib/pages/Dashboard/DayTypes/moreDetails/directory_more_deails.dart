@@ -1344,7 +1344,7 @@ class _ServicesMoreDetails extends State<ServicesMoreDetails> {
     AlertDialog alert = AlertDialog(
       title: Text(title),
       content: Text(
-        "sYou'll receive notifications when $msg posts new Deals and Offer.Are you sure want to Subscribe?",
+        "You'll receive notifications when $msg posts new Deals and Offer.Are you sure want to Subscribe?",
       ),
       actions: [noButton, yesButton],
     );

@@ -355,8 +355,7 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
                       "",
                       "You ${plan.planName} plan is already subscribed. Upgrade any other plans.",
                     );
-                  }
-                  if (currentPlanPrice > selectedPlanPrice) {
+                  } else if (currentPlanPrice > selectedPlanPrice) {
                     showCommonToast(
                       context,
                       "",
@@ -537,14 +536,18 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
           print("cancel title err -" + e.toString());
         }
 
-        if (data['price'] != 0) {
-          var price = data['price'].toString();
-          amount = double.parse(price.toString());
-          print("price " + amount.toString());
+        if (isLiveMode) {
+          showCommonToast(context, "", "Coming soon");
+        } else {
+          if (data['price'] != 0) {
+            var price = data['price'].toString();
+            amount = double.parse(price.toString());
+            print("price " + amount.toString());
 
-          var finalprice = amount.round();
-          referaltype = data['type'].toString();
-          buynowSucceApiCall(finalprice, false, id);
+            var finalprice = amount.round();
+            referaltype = data['type'].toString();
+            buynowSucceApiCall(finalprice, false, id);
+          }
         }
       }
       setState(() {});
@@ -561,6 +564,7 @@ class _SubscriptionPlansListFormState extends State<SubscriptionPlansList> {
       "userIndexId": userIndexId,
       "planId": "" + planId,
       "amount": "" + finalAmt.toString(),
+      // "amount": "1" ,
       "referalCode": referalCode,
       "referalType": "" + referaltype,
     };

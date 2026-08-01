@@ -872,7 +872,7 @@ class _CreatePosts extends State<CreatePosts> {
                         ),
                         child: Center(
                           child: Text(
-                            'Add Deal / Offer',
+                            ' Add Deal / Offer ',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,

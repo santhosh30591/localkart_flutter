@@ -15,6 +15,7 @@ class ViewStatusdetailsModel {
   ViewStatusdetailsModel.fromJson(Map<String, dynamic> json) {
     errorCode = json['errorCode'];
     message = json['message'];
+    rewards = json['rewards'];
     result = json['result'] != null
         ? new Result.fromJson(json['result'])
         : null;

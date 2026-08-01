@@ -9,20 +9,28 @@ import 'package:localkart/data_base/db_config.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/action_bar.dart';
 
-class MybookingsPage extends StatefulWidget {
-  static const routeName = '/myBookings';
+class MyRewardsPage extends StatefulWidget {
+  static const routeName = '/myrewards';
 
-  MybookingsPage({Key? key}) : super(key: key);
+  MyRewardsPage({Key? key}) : super(key: key);
 
   @override
-  State<MybookingsPage> createState() => _MybookingsPageState();
+  State<MyRewardsPage> createState() => _MyRewardsPageState();
 }
 
-class _MybookingsPageState extends State<MybookingsPage> {
+class _MyRewardsPageState extends State<MyRewardsPage> {
   Future getBookingsList() async {
     var userid = await DBHelper().getLoginSubDB("Id");
+    var type = "" + await DBHelper().getLoginDB("type");
 
-    var url = "$subBase/mybookings?userid=$userid";
+    if (type == "Services") {
+      type = "Service";
+    }
+
+    var url =
+        "$subBase/myrewards?userId=$userid"
+            "&type=" +
+        type;
     var responces = await ApiClientLocalKart().httpGet(url);
 
     return json.decode(responces.body);
@@ -31,7 +39,7 @@ class _MybookingsPageState extends State<MybookingsPage> {
   @override
   Widget build(BuildContext context) {
     return actionBarTopBottomView(
-      "My Bookings",
+      "My Rewards",
       context,
       FutureBuilder(
         future: getBookingsList(),
@@ -42,7 +50,7 @@ class _MybookingsPageState extends State<MybookingsPage> {
           if (snapshot.hasData) {
             var data = snapshot.data['result'];
             return snapshot.data['result'] == null
-                ? Center(child: Text(snapshot.data['message']))
+                ? Center(child: Text(snapshot.data['Message']))
                 : ListView.builder(
                     itemCount: data.length,
                     shrinkWrap: true,
@@ -128,7 +136,7 @@ class _TicketWidgetState extends State<TicketWidget> {
                     ), // Change 20.0 to your desired radius
                   ),
                   child: Image.network(
-                    widget.ticketData['pri_image'] ?? "",
+                    widget.ticketData['reward_image'] ?? "",
                     fit: BoxFit.cover,
                     loadingBuilder:
                         (
@@ -159,7 +167,7 @@ class _TicketWidgetState extends State<TicketWidget> {
               ),
               // const SizedBox(width: 10),
               DottedVerticalLineWidget(
-                height: 140,
+                height: 145,
                 strokeWidth: 2.0,
                 color: const Color.fromARGB(
                   255,
@@ -170,7 +178,7 @@ class _TicketWidgetState extends State<TicketWidget> {
               ),
               // const SizedBox(width: 5),
               Padding(
-                padding: const EdgeInsets.only(left: 8.0),
+                padding: const EdgeInsets.only(left: 12.0),
                 child: SizedBox(
                   width: screenWidth / 1.50,
                   child: Column(
@@ -180,7 +188,7 @@ class _TicketWidgetState extends State<TicketWidget> {
                       SizedBox(
                         width: screenWidth / 1.8,
                         child: Text(
-                          widget.ticketData['eventname'] ?? "",
+                          widget.ticketData['shop_name'] ?? "",
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: TextStyle(
@@ -190,100 +198,96 @@ class _TicketWidgetState extends State<TicketWidget> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.all(2.0),
-                            child: Icon(
-                              Icons.calendar_month_outlined,
-                              size: 18,
-                            ),
-                          ),
+                          // const Padding(
+                          //   padding: EdgeInsets.all(2.0),
+                          //   child: Icon(
+                          //     Icons.calendar_month_outlined,
+                          //     size: 18,
+                          //   ),
+                          // ),
                           Text(
-                            widget.ticketData['date'] ?? "",
+                            widget.ticketData['type'] ?? "",
                             style: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
                           ),
                         ],
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.all(2.0),
-                            child: Icon(Icons.access_time, size: 18),
-                          ),
-                          Text(
-                            widget.ticketData['time'] ?? "",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+
+                      Text(
+                        widget.ticketData['title'] ?? "",
+                        maxLines: 2,
+
+                        style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 13,
+                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.all(2.0),
-                            child: Icon(Icons.location_on_outlined, size: 18),
-                          ),
-                          Text(
-                            widget.ticketData['district'] ?? "",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
+
+                      SizedBox(height: 10),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                height: 20,
-                                width: 5,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  // child: Image.asset('assets/events.png'),
+                              Text(
+                                "Valid Till " + widget.ticketData['expiry'],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 13,
                                 ),
                               ),
-                              // const SizedBox(width: 5),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    widget.ticketData['tickets'] ?? " 0",
-                                    style: TextStyle(color: app_theam[400]),
+
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                    width: 1,
+                                    color: app_theam,
                                   ),
-                                  Text(
-                                    " Tickets",
-                                    style: TextStyle(color: app_theam[400]),
+                                ),
+                                margin: EdgeInsets.all(2),
+                                padding: EdgeInsets.only(left: 5, right: 5),
+                                child: Text(
+                                  widget.ticketData['validupto'] ?? " 0",
+                                  style: TextStyle(
+                                    color: app_theam[400],
+                                    fontSize: 12,
                                   ),
-                                ],
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          Icon(
-                            Icons.arrow_forward,
-                            color: app_theam[300],
-                            size: 18,
+
+                          Container(
+                            decoration: BoxDecoration(
+                              color: app_theam,
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(width: 1, color: app_theam),
+                            ),
+
+                            padding: EdgeInsets.only(
+                              left: 10,
+                              right: 10,
+                              top: 5,
+                              bottom: 5,
+                            ),
+                            child: Text(
+                              "View",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
                         ],
                       ),

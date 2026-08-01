@@ -292,6 +292,40 @@ class _NavBar extends State<NavBar> {
                   },
                 ),
 
+          isLiveMode
+              ? Container()
+              : InkWell(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(image_higth),
+                        margin: EdgeInsets.only(left: image_left),
+                        child: Image.asset(
+                          'assets/my_booking.png',
+                          width: menuImgHeightWidth,
+                          height: menuImgHeightWidth,
+                          fit: BoxFit.cover,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      SizedBox(width: image_space),
+                      const Text(
+                        'My Rewards',
+                        style: TextStyle(
+                          // fontWeight: FontWeight.w600,
+                          color: Colors.black54,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.of(contextMain).pushNamed(root_my_rewards);
+                  },
+                ),
+
           InkWell(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -991,20 +1025,3 @@ class _NavBar extends State<NavBar> {
     }
   }
 }
-
-// checkingLoginSettings() async {
-//   if (isLogin) {
-//     Navigator.pop(context);
-//     Navigator.of(contextMain).pushNamed(root_settings_details);
-//   } else {
-//     try {
-//       var result = await Navigator.of(context).pushNamed(root_login) as bool;
-//       if (result == true) {
-//         Navigator.pop(context);
-//         Navigator.of(contextMain).pushNamed(root_settings_details);
-//       }
-//     } catch (e) {
-//       print("Login alerts errors - " + e.toString());
-//     }
-//   }
-// }

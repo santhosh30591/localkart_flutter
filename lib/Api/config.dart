@@ -19,13 +19,12 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-var isUat = true;
-
 var BaseURL = "localkart.app";
 
 var subBase = isLiveMode
-    ? "https://www.$BaseURL/portal/uatapi"
-    : "https://www.$BaseURL/portal/api";
+    ? "https://www.$BaseURL/portal/api"
+    : "https://www.$BaseURL/portal/uatapi";
+// : "https://www.$BaseURL/portal/api";
 
 var BillPaymentBaseURL = isLiveMode
     ? "https://billpaynxt.in/portal/uatapi/"
@@ -55,6 +54,7 @@ var shopviewcount = "$subBase/shopviewcount";
 var checkRegister = "$subBase/checkorgregister";
 var bookingSlider = "$subBase/mybookings";
 var paysuccess = "$subBase/paysuccess";
+var payment_status = "$subBase/payment_status";
 var sumcart = "$subBase/sumcart";
 var bookingconfirm = "$subBase/bookingconfirm";
 var paysuccessfree = "$subBase/paysuccessfree";
@@ -148,5 +148,6 @@ var url_bill_status = BillPaymentBaseURL + "bill_status";
 var url_transaction_details = BillPaymentBaseURL + "transaction_details";
 
 var url_dashboard = subBase + "/dashboard";
+var getcommonreward = subBase + "/getcommonreward";
 var url_Updatedeviceid = subBase + "/updatedeviceid";
 var url_scan_booking_list = subBase + "/scan_bookedlist";

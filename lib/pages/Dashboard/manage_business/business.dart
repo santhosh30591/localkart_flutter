@@ -29,7 +29,6 @@ class _BusinessFormState extends State<Business> {
   void initState() {
     // dashboardPageReloadings(sid, dId);
     super.initState();
-
     _count();
   }
 
@@ -43,7 +42,9 @@ class _BusinessFormState extends State<Business> {
   var userIndexId;
 
   _count() async {
-    await getMagaSale();
+    if (!isLiveMode) {
+      await getMagaSale();
+    }
 
     var response = await HttpClients(context).getCounts();
     print(response);
@@ -67,9 +68,7 @@ class _BusinessFormState extends State<Business> {
     var responseBody = jsonDecode(responces.body);
 
     EventRegister = responseBody['result'].toString();
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -253,6 +252,39 @@ class _BusinessFormState extends State<Business> {
                                 },
                               ),
                             ),
+
+                            const SizedBox(height: 20),
+                            Container(
+                              color: Colors.white,
+                              child: ListTile(
+                                minLeadingWidth: 15,
+                                leading: Image.asset(
+                                  'assets/ic_manage_rewards.png',
+                                  width: 28,
+                                  height: 28,
+                                ),
+                                title: const Text(
+                                  'Manage Rewards',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                                trailing: const Icon(
+                                  Icons.navigate_next,
+                                  color: Colors.grey,
+                                ),
+                                onTap: () {
+                                  if (isLiveMode) {
+                                    showCommonToast(context, "", "Coming Soon");
+                                  } else {
+                                    Navigator.of(
+                                      context,
+                                    ).pushNamed(root_business_create_post);
+                                  }
+                                },
+                              ),
+                            ),
                             const SizedBox(height: 20),
                             Container(
                               color: Colors.white,
@@ -285,6 +317,7 @@ class _BusinessFormState extends State<Business> {
                                 },
                               ),
                             ),
+
                             const SizedBox(height: 20),
                             Container(
                               color: Colors.white,
@@ -490,11 +523,7 @@ class _BusinessFormState extends State<Business> {
                                         ),
                                       ),
                                       title: Text(
-                                        "" +
-                                            _magaSaleCreateModel
-                                                .result![0]
-                                                .offerTitle
-                                                .toString(),
+                                        "${_magaSaleCreateModel.result![0].offerTitle}",
                                         style: const TextStyle(
                                           color: Colors.black,
                                           fontSize: 17,
@@ -522,6 +551,12 @@ class _BusinessFormState extends State<Business> {
                                                 .toString(),
                                           );
                                         } else {
+
+
+                                          Navigator.of(
+                                            context,
+                                          ).pushNamed(root_ticketNxt);
+
                                           Navigator.of(context).pushReplacement(
                                             MaterialPageRoute(
                                               builder: (context) =>

@@ -182,33 +182,4 @@ class EventsProvider with ChangeNotifier {
       return null;
     }
   }
-
-  Future<dynamic> sumCartApi(inputs) async {
-    var response = await ApiClientLocalKart().httpPost(inputs, sumcart);
-    var responseBody = jsonDecode(response.body);
-    if (responseBody['errorCode'] == 0) {
-      return responseBody;
-    } else {
-      return null;
-    }
-  }
-
-  Future<dynamic> bookingApi(inputs, amount) async {
-    var response = await http.post(
-      Uri.parse(bookingconfirm + "?amount=$amount"),
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: inputs,
-    );
-    print("bookingApi inputs ${jsonEncode(inputs).toString()}");
-    print("bookingApi ${response.body.toString()}");
-    var value = response.body;
-
-    if (response.statusCode == 200) {
-      print("bookingApi ${value.toString()}");
-
-      return value;
-    } else {}
-  }
 }

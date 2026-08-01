@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:localkart/model/bill_pay_model/view_status_details_model.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/buttons.dart';
+import 'package:scratcher/scratcher.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 void ShowTost(String msg) {
   Fluttertoast.showToast(
@@ -94,6 +97,171 @@ void showCommonToast(BuildContext context, String title, String msg) {
     context: context,
     builder: (BuildContext context) {
       return alert;
+    },
+  );
+}
+
+void scarchCard(BuildContext context, RewardDetails result) {
+  final scratchKey = GlobalKey<ScratcherState>();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Scratcher(
+            key: scratchKey,
+            threshold: 30,
+            brushSize: 40,
+            image: Image.asset('assets/scratch_cover.png', fit: BoxFit.cover),
+            onThreshold: () {
+              scratchKey.currentState?.reveal(
+                duration: const Duration(milliseconds: 500),
+              );
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header with "Congratulations!" and Close button
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  color: app_theam,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      const Text(
+                        "Congratulations!",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Positioned(
+                        right: 10,
+                        child: InkWell(
+                          onTap: () => Navigator.pop(context),
+                          child: const Icon(
+                            Icons.cancel_outlined,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "You have got a",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                // Yellow Banner for reward type
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  color: Colors.amber,
+                  alignment: Alignment.center,
+                  child: Text(
+                    result.reward_type ?? "Buy & Get Free Offer",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 25),
+                // Row with Logo and Reward Title
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: Image.network(
+                            result.logo ?? "",
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset("assets/logo_with_name1.png");
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Text(
+                          result.reward_title ?? "",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // View Details Button
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 25),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: app_theam,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        "View Details",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     },
   );
 }
@@ -199,6 +367,114 @@ Future businessAlerts(
     context: context,
     builder: (BuildContext context) {
       return alert;
+    },
+  );
+}
+
+Future bookingTermsCondiction(
+  BuildContext context,
+  String htmlContent,
+  GestureTapCallback cancel,
+  GestureTapCallback ok,
+) async {
+  // Initialize the controller
+  final WebViewController controller = WebViewController()
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setBackgroundColor(const Color(0x00000000))
+    ..loadHtmlString("""
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body { font-family: sans-serif; font-size: 14px; line-height: 1.6; color: #333; padding: 10px; }
+          </style>
+        </head>
+        <body>
+          $htmlContent
+        </body>
+      </html>
+    """);
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: Column(
+            children: [
+              // Header
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(gradient: app_gradient),
+                // Using your app_gradient
+                child: Text(
+                  "Terms & Conditions",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+
+              // WebView Content
+              Expanded(child: WebViewWidget(controller: controller)),
+
+              // Footer Buttons
+              Container(
+                height: 50,
+                color: Colors.white,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: cancel,
+                        child: Container(
+                          margin: EdgeInsets.only(right: 1),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            gradient: gradient_btn_lift,
+                            // or a specific purple shade from your UI
+                            // border: Border(
+                            //   right: BorderSide(color: Colors.white, width: 1),
+                            // ),
+                          ),
+                          child: Text(
+                            "Cancel",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Expanded(
+                      child: InkWell(
+                        onTap: ok,
+                        child: Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            gradient: gradient_btn_rigth,
+                          ),
+                          child: Text(
+                            "Accept",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     },
   );
 }

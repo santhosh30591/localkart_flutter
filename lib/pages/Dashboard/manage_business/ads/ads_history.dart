@@ -91,12 +91,10 @@ class _AdsHostoryFormState extends State<AdsHostory> {
 
         var datas = json.decode(responces.body.toString());
 
-        print("datas " + datas.toString());
+        _adsHistoryModel = AdsHistoryModel.fromJson(datas);
+        print("_adsHistoryModel " + datas.toString());
 
-        if (datas['errorCode'].toString() == "0") {
-          _adsHistoryModel = AdsHistoryModel.fromJson(datas);
-          setState(() {});
-        }
+        setState(() {});
       } catch (e) {
         setState(() {
           _isLoading = false;
@@ -154,7 +152,7 @@ class _AdsHostoryFormState extends State<AdsHostory> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       child: actionBarTopBottomView(
-        "Post History",
+        "Post History" + _adsHistoryModel.errorCode.toString(),
         context,
 
         Scaffold(

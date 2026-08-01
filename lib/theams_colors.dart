@@ -67,4 +67,4 @@ Gradient gradient_btn_rigth = LinearGradient(
   end: Alignment.bottomRight,
 );
 
-var isLiveMode = false;
+var isLiveMode = true;

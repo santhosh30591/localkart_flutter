@@ -9,6 +9,7 @@ const String root_search = '/search';
 const String root_profile_nav = '/profile';
 const String root_feedback = '/feedback';
 const String root_my_bookings = '/mybookings';
+const String root_my_rewards = '/myrewards';
 const String view_my_bookings = '/view_booking';
 const String root_notification_list = '/notification_list';
 const String root_trans_list = '/trans_list';
@@ -28,7 +29,6 @@ const String root_business_subscribers_list = '/business_subscribers';
 const String business_digital_subscriptin_list =
     '/business_digital_subscriptin_list';
 
-
 const String business_subscriptin_history = "/business_subscriptin_history";
 const String business_lead = "/business_lead";
 
@@ -38,7 +38,8 @@ const String root_business_location = '/business_location';
 const String root_business_tags = '/business_tags';
 const String root_bookNow = '/bookNow';
 const String root_business_services = '/business_services';
-const String root_ticketNxt= '/business_ticketNxt';
+const String root_ticketNxt = '/business_ticketNxt';
+const String root_maga_sale = '/business_maga_sale';
 
 const String root_services_list = '/serviceList';
 const String root_referal = '/referal';

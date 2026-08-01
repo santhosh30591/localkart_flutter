@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localkart/RoutingSetup/router-constants.dart';
 import 'package:localkart/data_base/db_config.dart';
 import 'package:localkart/theams_colors.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -14,42 +12,35 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreen extends State<SplashScreen> {
-  Future checkFirstSeen() async {
-    var dbhelper = await DBHelper();
-    bool islogin = await dbhelper.isLoginDB();
+  final DBHelper _dbHelper = DBHelper();
 
-    if (islogin) {
+  @override
+  void initState() {
+    super.initState();
+    _redirectPage();
+  }
+
+  Future<void> _redirectPage() async {
+    // Add a minimum delay to show the splash animation
+    int delaySeconds = isLiveMode ? 5 : 2;
+    await Future.delayed(Duration(seconds: delaySeconds));
+
+    if (!mounted) return;
+
+    bool isLogin = await _dbHelper.isLoginDB();
+
+    if (isLogin) {
       Navigator.pushNamedAndRemoveUntil(
         context,
         root_dashboard,
         (route) => false,
       );
     } else {
-      Navigator.pushNamedAndRemoveUntil(context, root_login, (route) => false);
-    }
-  }
-
-  @override
-  void initState() {
-    print("redirect Splash Screen");
-    redirectPage();
-
-    super.initState();
-  }
-
-  Future<void> initializePreference() async {
-    checkFirstSeen();
-  }
-
-  void redirectPage() async {
-    print("redirect home");
-
-    if (!isLiveMode) {
-      initializePreference();
-    } else {
-      await Future.delayed(const Duration(seconds: 5), () {
-        initializePreference();
-      });
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        root_login,
+        (route) => false,
+      );
     }
   }
 
@@ -62,49 +53,23 @@ class _SplashScreen extends State<SplashScreen> {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
       ),
-      child: Stack(
-        children: <Widget>[
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/login-reg-bg.png"),
-                fit: BoxFit.cover,
-              ),
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/splash_bg.png"),
+              fit: BoxFit.cover,
             ),
           ),
-
-          SafeArea(
-            top: true,
-            bottom: true,
-
-            child: Scaffold(
-              extendBody: true,
-              extendBodyBehindAppBar: true,
-              // backgroundColor: Colors.transparent,
-              body: Container(
-                color: Colors.white,
-                width: double.infinity,
-                height: double.infinity,
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage("assets/splash_bg.png"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  // child: InkWell(
-                  //   onTap: () {
-                  //     Navigator.pushNamed(context, root_login);
-                  //   },
-                  child: Image.asset("assets/splash_ani.gif"),
-                  // ),
-                ),
-              ),
+          child: Center(
+            child: Image.asset(
+              "assets/splash_ani.gif",
+              fit: BoxFit.contain,
             ),
           ),
-        ],
+        ),
       ),
     );
   }

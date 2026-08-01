@@ -93,9 +93,7 @@ class _AddServicesAlerts extends State<AddServicesAlerts> {
                           if (_textAddService.text.length == 0) {
                           } else {
                             Navigator.pop(
-                              context,
-                              "" + _textAddService.text.toString(),
-                            );
+                              context, _textAddService.text.toString());
                           }
                         },
                         child: Container(
@@ -136,9 +134,7 @@ class _AddServicesAlerts extends State<AddServicesAlerts> {
               backgroundColor: Colors.white,
               radius: 35,
               child: Image.asset(
-                "assets/logo_with_name.png",
-                height: 50,
-                width: 50,
+                "assets/logo_with_name.png", height: 50, width: 50,
               ),
             ),
           ),

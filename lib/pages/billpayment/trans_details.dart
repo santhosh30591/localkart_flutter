@@ -4,6 +4,7 @@ import 'package:localkart/RoutingSetup/router-constants.dart';
 import 'package:localkart/model/bill_pay_model/view_status_details_model.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/action_bar.dart';
+import 'package:localkart/unit/showing.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -110,34 +111,36 @@ class _TransStatusDetails extends State<TransStatusDetails> {
                         ),
                       ),
               ),
-              bottomNavigationBar: viewStatusdetailsModel.rewards == false
+              bottomNavigationBar:
+                  viewStatusdetailsModel.rewards == null ||
+                      viewStatusdetailsModel.rewards == false
                   ? Container(height: 1)
                   : InkWell(
                       onTap: () {
                         try {
-                          print(
-                            "name " +
-                                viewStatusdetailsModel
-                                    .result!
-                                    .reward!
-                                    .result!
-                                    .reward_title
-                                    .toString(),
+                          scarchCard(
+                            context,
+                            viewStatusdetailsModel.result!.reward!.result!,
                           );
                         } catch (e) {
                           print("error $e");
                         }
                       },
-                      child: Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(gradient: app_gradient),
+                      child: isHistory
+                          ? Container(height: 1)
+                          : Container(
+                              height: 50,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(gradient: app_gradient),
 
-                        child: Text(
-                          "OK",
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ),
+                              child: Text(
+                                "OK",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
                     ),
             ),
           );

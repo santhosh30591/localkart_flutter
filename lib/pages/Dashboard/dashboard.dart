@@ -1,13 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:localkart/Api/provider/home_provider.dart';
-import 'package:localkart/RoutingSetup/root_data_pass.dart';
 import 'package:localkart/RoutingSetup/router-constants.dart';
 import 'package:localkart/data_base/db_config.dart';
+import 'package:localkart/model/bill_pay_model/view_status_details_model.dart';
+
 import 'package:localkart/model/dashboard/servicesDetailsModel.dart';
 import 'package:localkart/model/dashboard/shop_services_model.dart';
 import 'package:localkart/model/dashboard_model.dart';
@@ -15,6 +14,7 @@ import 'package:localkart/model/home_billpay_list.dart';
 import 'package:localkart/pages/Dashboard/manage_business/ticketNxt/bookings.dart';
 import 'package:localkart/pages/Dashboard/menu/Notification/notification_details.dart';
 import 'package:localkart/pages/Dashboard/menu/Notification/notification_post_details.dart';
+
 import 'package:localkart/pages/Dashboard/nav.dart';
 import 'package:localkart/pages/events/bookNow.dart';
 import 'package:localkart/pages/events/eventdetailspage.dart';
@@ -22,10 +22,12 @@ import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/image_zooming.dart';
 import 'package:localkart/unit/showing.dart';
 import 'package:localkart/unit/showingLocationAletrs.dart';
+
 import 'package:marquee/marquee.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:vdocipher_flutter/vdocipher_flutter.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -182,6 +184,7 @@ class _DashboardPage extends State<DashboardPage> {
       provider = await Provider.of<HomePageProvider>(context, listen: false);
       provider.updateContext(contexts: context);
       provider.getDashboard(userIndexId, stateId, districtId);
+      await provider.getrewards(userIndexId);
 
       if (!isLiveMode) {
         await initOneSignal();
@@ -232,7 +235,7 @@ class _DashboardPage extends State<DashboardPage> {
           isLoading = provider.isLoading;
           _billPayDataList = provider.billPayDataList;
           dashboardModel = provider.dashboardModel;
-          ticket_next_events = provider.events!;
+          ticket_next_events = provider.events;
 
           return AnnotatedRegion<SystemUiOverlayStyle>(
             value: const SystemUiOverlayStyle(
@@ -324,7 +327,19 @@ class _DashboardPage extends State<DashboardPage> {
                           onTap: () async {
                             if (!isLiveMode) {
                               if (_currentIndex == 0) {
-                                Navigator.of(context).pushNamed(root_search);
+                                // Navigator.of(context).pushNamed(root_search);
+                                var details = RewardDetails(
+                                  id: 147,
+                                  reward_title: "test title",
+                                  reward_type: "Reward typesss",
+                                  reward_validity: "12-12-2026",
+                                );
+
+                                try {
+                                  scarchCard(context, details);
+                                } catch (e) {
+                                  print("error $e");
+                                }
                               } else {
                                 showEventAlerts();
                               }
@@ -467,6 +482,8 @@ class _DashboardPage extends State<DashboardPage> {
                     margin: EdgeInsets.only(
                       top: events.length == 0 ? 0 : 10,
                       bottom: events.length == 0 ? 0 : 5,
+                      left: 10,
+                      right: 10,
                     ),
                     child: ListView.builder(
                       itemCount: events.length,
@@ -476,17 +493,19 @@ class _DashboardPage extends State<DashboardPage> {
                         return events[index].eventname == "More"
                             ? InkWell(
                                 onTap: () {
-                                  _currentIndex = 1;
-                                  selectEventFilter = 1;
-                                  provider.getDashboardEvent(
-                                    userIndexId.toString(),
-                                    stateId.toString(),
-                                    districtId.toString(),
-                                    lat,
-                                    longs,
-                                    selectEventFilter,
-                                  );
-                                  setState(() {});
+                                  if (!isLiveMode) {
+                                    _currentIndex = 1;
+                                    selectEventFilter = 1;
+                                    provider.getDashboardEvent(
+                                      userIndexId.toString(),
+                                      stateId.toString(),
+                                      districtId.toString(),
+                                      lat,
+                                      longs,
+                                      selectEventFilter,
+                                    );
+                                    setState(() {});
+                                  }
                                 },
                                 child: Container(
                                   width: 120,
@@ -506,29 +525,67 @@ class _DashboardPage extends State<DashboardPage> {
                               )
                             : InkWell(
                                 onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => EventDetailsPage(
-                                        context,
-                                        eventId: events[index].eventId!.toInt(),
-                                        flag: 1,
+                                  if (!isLiveMode) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => EventDetailsPage(
+                                          context,
+                                          eventId: events[index].eventId!
+                                              .toInt(),
+                                          flag: 1,
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  }
                                 },
+
                                 child: Container(
                                   width: 120,
                                   height: 150,
-                                  margin: EdgeInsets.only(left: 10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    // Optional: rounded corners
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                        events[index].image.toString(),
-                                      ),
-                                      fit: BoxFit
-                                          .fill, // Ensures the image fills the container
+                                  margin: EdgeInsets.only(right: 10),
+
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    // If you need rounded corners
+                                    child: Image.network(
+                                      events[index].image.toString(),
+                                      width: 120,
+                                      height: 150,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (
+                                            BuildContext context,
+                                            Widget child,
+                                            ImageChunkEvent? loadingProgress,
+                                          ) {
+                                            if (loadingProgress == null) {
+                                              return child; // Image is fully loaded, display it
+                                            }
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value:
+                                                    loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          loadingProgress
+                                                              .expectedTotalBytes!
+                                                    : null, // Displays exact progress if total size is known
+                                              ),
+                                            );
+                                          },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            return Container(
+                                              color: Colors.grey[200],
+                                              child: const Icon(
+                                                Icons.broken_image,
+                                                color: Colors.grey,
+                                                size: 40,
+                                              ),
+                                            );
+                                          },
                                     ),
                                   ),
                                 ),
@@ -1191,28 +1248,18 @@ class _DashboardPage extends State<DashboardPage> {
             ? TempDashboardLoading(isLoading: isLoading)
             : Container(
                 child: Container(
-                  child: !isLiveMode
-                      ? ticket_next_events != null &&
-                                ticket_next_events.length != 0
-                            ? ticketNextUiLoading()
-                            : Container(
-                                // height: 300,
-                                width: double.infinity,
-
-                                child: Column(
-                                  mainAxisAlignment: .center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [Text('No Data Found.')],
-                                ),
-                              )
+                  child:
+                      ticket_next_events != null &&
+                          ticket_next_events.length != 0
+                      ? ticketNextUiLoading()
                       : Container(
                           // height: 300,
                           width: double.infinity,
 
                           child: Column(
-                            mainAxisAlignment: .center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [Text('Coming soon.')],
+                            children: [Text('No Data Found.')],
                           ),
                         ),
                 ),
@@ -1226,7 +1273,7 @@ class _DashboardPage extends State<DashboardPage> {
               sliderView(topSlider),
 
               Column(
-                mainAxisAlignment: .center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
@@ -1347,13 +1394,13 @@ class _DashboardPage extends State<DashboardPage> {
                         ),
                       ),
                     ),
-                    _billPayDataList != null && _billPayDataList.length != 0
+                    _billPayDataList.length != 0
                         ? billpayViewLoading()
-                        : Container(
+                        : SizedBox(
                             height: 300,
                             width: double.infinity,
                             child: Column(
-                              mainAxisAlignment: .center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [Text('No Data Found.')],
                             ),
@@ -1363,7 +1410,7 @@ class _DashboardPage extends State<DashboardPage> {
               );
       } else {
         return Column(
-          mainAxisAlignment: .center,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [Text('No Data Found.')],
         );
@@ -1639,206 +1686,222 @@ class _DashboardPage extends State<DashboardPage> {
   Widget ticketNextUiLoading() {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 5), // Edge padding
-
       itemCount: ticket_next_events.length,
       itemBuilder: (context, index) {
-        return Container(
-          margin: EdgeInsets.only(top: 5),
+        final event = ticket_next_events[index];
+        EmbedInfo? embedInfo;
 
+        if (event.is_video == 1 &&
+            event.video_url != null &&
+            event.video_url!.isNotEmpty) {
+          try {
+            Uri uri = Uri.parse(event.video_url.toString());
+            String otp = uri.queryParameters['otp']?.toString() ?? "";
+            String playbackInfo =
+                uri.queryParameters['playbackInfo']?.toString() ?? "";
+
+            if (otp.isNotEmpty && playbackInfo.isNotEmpty) {
+              embedInfo = EmbedInfo.streaming(
+                otp: otp,
+                playbackInfo: playbackInfo,
+              );
+            }
+          } catch (e) {
+            print("Video parsing error: $e");
+          }
+        }
+
+        return Container(
+          margin: const EdgeInsets.only(top: 5),
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             elevation: 2,
-            child: SizedBox(
-              // width: MediaQuery.of(context).size.width - 10,
-              child: Column(
-                children: [
-                  Container(
-                    // height: 0,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(
-                          10,
-                        ), // Rounds both top-left and top-right
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(13),
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            eventImageLoading(
-                              ticket_next_events[index].image,
-                              ticket_next_events[index].bookingAllow,
-                            ),
-                            ticket_next_events[index].is_video == 1 &&
-                                    ticket_next_events[index].isPlayingIcons
-                                ? InkWell(
-                                    onTap: () {
-                                      ticket_next_events[index].isPlayingIcons =
-                                          false;
-                                      setState(() {});
-                                    },
-
-                                    child: Container(
-                                      height: 40,
-                                      child: Image.asset("assets/ic_play.png"),
-                                    ),
-                                  )
-                                : Container(),
-                          ],
-                        ),
-                      ),
+            child: Column(
+              children: [
+                if (event.is_video == 1 && !event.isPlayingIcons)
+                  AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: embedInfo != null
+                        ? VdoPlayer(
+                            embedInfo: embedInfo,
+                            onPlayerCreated: (VdoPlayerController controller) {
+                              setState(() {});
+                            },
+                            controls: true,
+                            onError: (VdoError vdoError) {
+                              print("VdoPlayer error: $vdoError");
+                            },
+                          )
+                        : const Center(child: CircularProgressIndicator()),
+                  )
+                else
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(10),
                     ),
-                  ),
-
-                  Container(
-                    color: app_colorSecondary,
-                    width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsetsGeometry.all(10),
-                        child: Text(
-                          ticket_next_events[index].eventname.toString(),
-                          style: TextStyle(
-                            color: app_theam,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(13),
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 2,
-                      right: 5,
-                      top: 5,
-                      bottom: 5,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          eventImageLoading(event.image, event.bookingAllow),
+                          if (event.is_video == 1 && event.isPlayingIcons)
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  // event.isPlayingIcons = false;
+                                });
+                              },
                               child: SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: Image.asset(
-                                  "assets/calendar_outlined.png",
-                                ),
+                                height: 40,
+                                child: Image.asset("assets/ic_play.png"),
                               ),
                             ),
-                            Text(ticket_next_events[index].date!),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(4.0),
-                              child: Icon(Icons.location_on_outlined, size: 20),
-                            ),
-                            Text(ticket_next_events[index].district!),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: ticket_next_events[index].bookingAllow == 0
-                              ? () {
-                                  showCommonToast(
-                                    context,
-                                    "",
-                                    ticket_next_events[index].closedMessage!,
-                                  );
-                                }
-                              : () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => BookNowPage(
-                                        eventId: ticket_next_events[index].id!,
-                                      ),
-                                    ),
-                                  );
-                                },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient:
-                                  ticket_next_events[index].bookingAllow != 0
-                                  ? gradient_btn_lift
-                                  : gradient_btn_lift_disabled,
-                              borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(10),
-                              ),
-                            ),
-                            height: 45,
-
-                            child: const Center(
-                              child: Text(
-                                'Book Now',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
+                Container(
+                  color: app_colorSecondary,
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        event.eventname.toString(),
+                        style: const TextStyle(
+                          color: app_theam,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-
-                      SizedBox(width: 1),
-
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => EventDetailsPage(
-                                  context,
-                                  eventId: ticket_next_events[index].eventId!
-                                      .toInt(),
-                                  flag: 1,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient:
-                                  ticket_next_events[index].bookingAllow != 0
-                                  ? gradient_btn_rigth
-                                  : gradient_btn_lift_disabled,
-                              borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(10),
-                              ),
-                            ),
-                            height: 45,
-
-                            child: const Center(
-                              child: Text(
-                                'Details',
-                                style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 2,
+                    right: 5,
+                    top: 5,
+                    bottom: 5,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: Image.asset(
+                                "assets/calendar_outlined.png",
                               ),
                             ),
                           ),
-                        ),
+                          Text(event.date ?? ""),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.all(4.0),
+                            child: Icon(Icons.location_on_outlined, size: 20),
+                          ),
+                          Text(event.district ?? ""),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: event.bookingAllow == 0
+                            ? () {
+                                showCommonToast(
+                                  context,
+                                  "",
+                                  event.closedMessage ?? "",
+                                );
+                              }
+                            : () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        BookNowPage(eventId: event.id!),
+                                  ),
+                                );
+                              },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: event.bookingAllow != 0
+                                ? gradient_btn_lift
+                                : gradient_btn_lift_disabled,
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                            ),
+                          ),
+                          height: 45,
+                          child: const Center(
+                            child: Text(
+                              'Book Now',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Container(height: 45, width: 1.5, color: Colors.white),
+
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EventDetailsPage(
+                                context,
+                                eventId: event.eventId!.toInt(),
+                                flag: 1,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: event.bookingAllow != 0
+                                ? gradient_btn_rigth
+                                : gradient_btn_lift_disabled,
+                            borderRadius: const BorderRadius.only(
+                              bottomRight: Radius.circular(10),
+                            ),
+                          ),
+                          height: 45,
+                          child: const Center(
+                            child: Text(
+                              'Details',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );
@@ -2283,7 +2346,7 @@ class _DashboardPage extends State<DashboardPage> {
           position.longitude,
         );
 
-        print("ammu location test 1");
+        print("ammu location demo " + position.latitude.toString());
       }
       latitude = await DBHelper().getLocationDetailsDB(true);
       print("ammu location test latitude " + latitude.toString());

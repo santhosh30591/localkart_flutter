@@ -155,12 +155,11 @@ class _DirectoryList extends State<DirectoryList> {
       setState(() {
         _isLoading = false;
       });
-
       try {
         List<ServiceDetailsModel> localServices = [];
         var responce = "" + responces.body.toString();
         var datas = json.decode(responce);
-
+        print("responce " + responce);
         if (datas['errorCode'] == 0) {
           var lists = datas['result'] as List;
           for (int i = 0; i < lists.length; i++) {
@@ -181,6 +180,7 @@ class _DirectoryList extends State<DirectoryList> {
             model.type = "" + lists[i]['type'].toString();
             model.latitude = "" + lists[i]['latitude'].toString();
             model.longitude = "" + lists[i]['longitude'].toString();
+
             model.isSubscribed = "" + lists[i]['isSubscribed'].toString();
             model.shareUrl = "" + lists[i]['shareUrl'].toString();
             model.isVerify = "" + lists[i]['isVerify'].toString();

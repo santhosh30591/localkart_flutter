@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:localkart/Api/api_client.dart';
 import 'package:localkart/Api/config.dart';
 import 'package:localkart/data_base/db_config.dart';
+import 'package:localkart/model/bill_pay_model/view_status_details_model.dart';
 import 'package:localkart/model/dashboard/shop_services_model.dart';
 import 'package:localkart/model/dashboard_model.dart';
 import 'package:localkart/model/home_billpay_list.dart';
@@ -134,6 +135,45 @@ class HomePageProvider with ChangeNotifier, DiagnosticableTreeMixin {
         }
         isLoading = false;
         notifyListeners();
+      }
+    } catch (e) {
+      dashboardModel.errorCode = 2;
+
+      print("ApiClient Dashboard encode err  - $e");
+      isLoading = false;
+      notifyListeners();
+    }
+    isLoading = false;
+    getrewards(userIndexId);
+    notifyListeners();
+  }
+
+  getrewards(userIndexId) async {
+    var url = getcommonreward + "?customerid=" + userIndexId;
+    try {
+      var responces = await ApiClient(context).httpGet(url);
+      var datas = json.decode(responces.body.toString());
+      if (datas['errorCode'] != 0) {
+        // ShowToastdur(context, "Not Data Found");
+      } else {
+        var id = datas['result']['id'];
+        var reward_title = datas['result']['reward_title'];
+        var reward_type = datas['result']['reward_type'];
+        var logo = datas['result']['logo'];
+
+        var details = RewardDetails(
+          id: id,
+          reward_title: reward_title,
+          reward_type: reward_type,
+          reward_validity: "12-12-2026",
+          logo: logo,
+        );
+
+        try {
+          scarchCard(context, details);
+        } catch (e) {
+          print("error $e");
+        }
       }
     } catch (e) {
       dashboardModel.errorCode = 2;

@@ -3,12 +3,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:localkart/Api/api_client.dart';
 import 'package:localkart/Api/config.dart';
 import 'package:localkart/Api/provider/event_provider.dart';
 import 'package:localkart/data_base/db_config.dart';
+import 'package:localkart/pages/events/EventFailure.dart';
+import 'package:localkart/pages/events/eventsucess.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/action_bar.dart';
+import 'package:localkart/unit/showEventTransactionSucess.dart';
 import 'package:localkart/unit/showing.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class ReviewbookingArguments {
   var bookingDetails;
@@ -40,14 +45,20 @@ class _ReviewbookingState extends State<Reviewbooking> {
   String title = "";
   String url = "";
 
-  // late Razorpay _razorpay;
+  late Razorpay _razorpay;
 
-  // void _handlePaymentSuccess(
-  //   // PaymentSuccessResponse
-  //   response,
-  // ) {
-  //   paymentSucceApiCall("" + response.paymentId.toString());
-  // }
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    try {
+      var id = response.paymentId;
+
+      print("api  _razorpay response succes " + id.toString());
+      paymentSucceApiCall("" + id.toString());
+    } catch (e) {
+      print("api  _razorpay response error " + e.toString());
+
+      paymentSucceApiCall("" + e.toString());
+    }
+  }
 
   void _handlePaymentError(
     // PaymentFailureResponse
@@ -55,35 +66,34 @@ class _ReviewbookingState extends State<Reviewbooking> {
   ) {
     print("response ERROR " + response.message.toString());
     // transAlertProcess(false, "Transaction Failed.", "0");
-    // Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-    // Navigator.pushReplacementNamed(
-    //   context,
-    //   EventFailureScreen.routeName,
-    //   arguments: EventFailureScreenArguments(orderId.toString()),
-    // );
+
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => EventFailureScreen(eventid: "0")),
+    );
   }
 
-  void _handleExternalWallet(
-    // ExternalWalletResponse
-    response,
-  ) {
-    print("response wallets " + response.toString());
-    // ShowToast(context, "Please check your Wallet details.");
-
-    // transAlertProcess(false, "Please check your Wallet details.", "0");
-  }
+  // void _handleExternalWallet(
+  //   // ExternalWalletResponse
+  //   response,
+  // ) {
+  //   print("response wallets " + response.toString());
+  //   // ShowToast(context, "Please check your Wallet details.");
+  //   // transAlertProcess(false, "Please check your Wallet details.", "0");
+  // }
 
   @override
   void dispose() {
     super.dispose();
+
     // _razorpay.clear();
   }
 
   bool detailsShow = false;
+
   bool _isLoading = false;
 
   var Ticketdata;
-  var TicketOrderDetails;
+  var TicketOrderDetails = "";
   var TicketbookingOrderId;
 
   double totalqtyPrice = 0;
@@ -101,93 +111,151 @@ class _ReviewbookingState extends State<Reviewbooking> {
     }
     print("Payout amount");
     var options = {
-      'key': 'rzp_live_dPU9HUhjVuJg54',
-      //rzp_live_dPU9HUhjVuJg54   rzp_test_APRjuSYwwwfdnH
+      // 'key': 'rzp_live_dPU9HUhjVuJg54',
+      'key': 'rzp_test_APRjuSYwwwfdnH',
+
       'amount': totalpayable,
       'name': userName,
-      'description': 'Payment',
+      'description': 'Ticket Booking.',
+      'event_name': widget.eventDetails['eventname'],
       'prefill': {'contact': userPhone, 'email': userEmail},
       'external': {
         'wallets': ['paytm'],
       },
     };
 
+    if (isLiveMode) {
+      options = {
+        'key': 'rzp_live_dPU9HUhjVuJg54',
+        'amount': totalpayable,
+        'name': userName,
+
+        'order_id': TicketbookingOrderId,
+        'description': 'Ticket Booking.',
+        'event_name': widget.eventDetails['eventname'],
+        'prefill': {'contact': userPhone, 'email': userEmail},
+        'external': {
+          'wallets': ['paytm'],
+        },
+      };
+    }
+
     try {
       print("opction " + options.toString());
-      // _razorpay.open(options);
+      _razorpay.open(options);
     } catch (e) {
       // debugPrint(e);
       print("checkout error is  " + e.toString());
     }
   }
 
-  // paymentSucceApiCall(String tid) async {
-  //   var userIndexId = await DBHelper().getLoginSubDB("Id");
-  //   print("userIndexId ${userIndexId.toString()}");
-  //
-  //   try {
-  //     setState(() {
-  //       _isLoading = true;
-  //     });
-  //     var payscucesResponse = await HttpClientsTicketNxt(context)
-  //         .PaymentSucessAPI(
-  //           widget.eventDetails['id'].toString(),
-  //           userIndexId,
-  //           Ticketdata,
-  //           TicketOrderDetails,
-  //           TicketbookingOrderId,
-  //         );
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //
-  //     // print("payscucesResponse ['errorCode'] "+payscucesResponse['errorCode'].toString());
-  //     if (payscucesResponse['errorCode'].toString() == "1") {
-  //       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-  //       ShowToast(
-  //         context,
-  //         "" + payscucesResponse['Message'] ??
-  //             "Something went wrong, Try again!",
-  //       );
-  //       // print("Message " + payscucesResponse['Message'].toString());
-  //     } else if (payscucesResponse['errorCode'].toString() == "0") {
-  //       print("Message " + payscucesResponse['Message'].toString());
-  //       print("orderId " + payscucesResponse['orderId'].toString());
-  //       orderId = payscucesResponse['orderId'].toString();
-  //       // transAlertProcess(
-  //       //     true, "Payment Successfully Completed.", orderId.toString());
-  //
-  //       Navigator.pop(context);
-  //       Navigator.pop(context);
-  //       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-  //       Navigator.pushReplacementNamed(
-  //         context,
-  //         EventSucessScreen.routeName,
-  //         arguments: EventSucessScreenArguments(orderId.toString()),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //     ShowToast(context, "" + "Something went wrong, Try again!");
-  //     print(" loading payment success " + e.toString());
-  //   }
-  // }
-  //
-  // transAlertProcess(tyes, msg, eventId) async {
-  //   await showDialog(
-  //     context: context,
-  //     // barrierDismissible: true,
-  //     builder: (BuildContext context) {
-  //       return TransSuccessAlertsEvent(
-  //         type: tyes,
-  //         msg: msg,
-  //         eventId: widget.eventDetails['id'].toString(),
-  //       );
-  //     },
-  //   );
-  // }
+  paymentSucceApiCall(trans_id) async {
+    var userIndexId = await DBHelper().getLoginSubDB("Id");
+    print("userIndexId ${userIndexId.toString()}");
+
+    try {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = true;
+      });
+
+      Map<String, Object> input = {
+        "eventId": widget.eventDetails['id'].toString(),
+        "userId": userIndexId.toString(),
+        "paymentId": trans_id,
+        "tempid": tempId,
+        "orderdetails": TicketOrderDetails.toString(),
+        "orderId": TicketbookingOrderId.toString(),
+        "amount": "" + finaltotalpayable.toString(),
+      };
+
+      print("parms paysuccess $input");
+
+      var responces1 = await ApiClientLocalKart().httpPost(input, paysuccess);
+      print("payscucesResponse responces ${responces1.body}");
+
+      Map<String, Object> input2 = {"payment_id": trans_id};
+
+      var responces2 = await ApiClientLocalKart().httpPost(
+        input2,
+        payment_status,
+      );
+      print("payscucesResponse responces2 ${responces2.body}");
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+
+      try {
+        var payscucesResponse = json.decode(responces2.body.toString());
+
+        if (payscucesResponse['errorCode'].toString() == "1") {
+          // Safe check instead of forcing with '!'
+          if (_keyLoader.currentContext != null) {
+            Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+          }
+
+          if (!mounted) return;
+          ShowToast(
+            context,
+            payscucesResponse['Message']?.toString() ??
+                "Something went wrong, Try again!",
+          );
+        } else if (payscucesResponse['errorCode'].toString() == "0") {
+          print("orderId ${payscucesResponse['orderId']}");
+
+          orderId = payscucesResponse['orderId'].toString();
+
+          // 1. Safely dismiss the loading dialog if it is visible
+          if (_keyLoader.currentContext != null) {
+            Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+          }
+
+          // 2. Ensure context is still valid before running screen pops
+          if (!mounted) return;
+          Navigator.pop(context);
+          Navigator.pop(context);
+
+          // 3. Push to success screen
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => EventSucessScreen(
+                eventid: widget.eventDetails['id'].toString(),
+                orderId: orderId,
+              ),
+            ),
+          );
+
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(builder: (context) => EventFailureScreen(eventid: "0")),
+          // );
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (context) =>
+          //         EventSucessScreen(eventid: orderId.toString()),
+          //   ),
+          // );
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          ShowToast(context, "Something went wrong, Try again!");
+        }
+        print(" loading payment success main inside $e");
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ShowToast(context, "Something went wrong, Try again!");
+      }
+      print(" loading payment success $e");
+    }
+  }
 
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
 
@@ -218,52 +286,82 @@ class _ReviewbookingState extends State<Reviewbooking> {
   }
 
   sumCart() async {
-    final dataJson = jsonEncode(totalTicketPrices);
-    final qtysJson = jsonEncode(totalTicketQuantity);
+    var userIndexId = await DBHelper().getLoginSubDB("Id");
 
-    var input = {
-      'data': dataJson,
-      'id': widget.eventDetails['id'].toString(),
-      'qtys': qtysJson,
+    List<String> dataJson = [];
+    List<String> qtysJson = [];
+
+    for (int i = 0; i < totalTicketPrices.length; i++) {
+      dataJson.add(totalTicketPrices[i].toString());
+    }
+
+    for (int i = 0; i < totalTicketQuantity.length; i++) {
+      qtysJson.add(totalTicketQuantity[i].toString());
+    }
+
+    int? parsedId = int.tryParse(widget.eventDetails['id'].toString());
+    int? parsedUserId = int.tryParse(userIndexId.toString());
+
+    // 1. Keep data as a Map object for your API
+    Map<String, Object> input = {
+      'data': dataJson.toString(),
+      'id': parsedId.toString(),
+      'userid': parsedUserId.toString(),
+      'qtys': qtysJson.toString(),
     };
 
-    var sumCartApiResponse = await EventsProvider().sumCartApi(input);
-    _onBookingSubmit(sumCartApiResponse);
+    var response = await ApiClientLocalKart().httpPost(input, sumcart);
+    // var responseBody = jsonDecode(response.body);
+
+    sumCartApiResponse = response;
+    // print("New response " + responseBody.toString());
+    // if (responseBody['errorCode'] == 0) {
+    // return responseBody;
+
+    // var sumCartApiResponse = await EventsProvider().sumCartApi(input);
   }
+
+  var sumCartApiResponse;
+
+  var tempId = "";
 
   _onBookingSubmit(sumCartApiResponse) async {
     var userIndexId = await DBHelper().getLoginSubDB("Id");
-
-    final dataJson = jsonEncode(totalTicketPrices);
     Ticketdata = totalTicketPrices;
-    final orderdetails = jsonEncode(sumCartApiResponse);
-    TicketOrderDetails = sumCartApiResponse;
+    var orderdetails = json.decode(sumCartApiResponse.body.toString());
 
-    var input = {
-      'eventId': widget.eventDetails['id'].toString(),
-      'userId': userIndexId,
-      'data': dataJson,
-      'orderdetails': orderdetails,
-    };
+    tempId = orderdetails["tempid"].toString();
 
-    var bookingResponse = await EventsProvider().bookingApi(
-      input,
-      totalpayable,
-    );
-    TicketbookingOrderId = bookingResponse;
+    TicketOrderDetails = jsonEncode(TicketOrderDetails.toString());
+
+    // 3. Extract the inner list using the "orderdetails" key
+    List<dynamic> orderDetailsList = orderdetails['orderdetails'];
+
+    // 4. (Optional) If you need it as a clean JSON string again, use jsonEncode
+    TicketOrderDetails = jsonEncode(orderDetailsList);
+
+    print("sumCartApiResponse $orderdetails");
+    print("TicketOrderDetails $TicketOrderDetails and tempId " + tempId);
+
+    String finalJsonString = jsonEncode(TicketOrderDetails);
+    print(finalJsonString);
+
+    var url =
+        bookingconfirm +
+        "?amount=$finaltotalpayable&tempid=$tempId&userid=" +
+        userIndexId.toString();
+    var bookingResponse = await ApiClientLocalKart().httpGet(url);
+
+    var payscucesResponse = bookingResponse.body.toString();
+
+    TicketbookingOrderId = payscucesResponse;
 
     if (totalpayable == 0) {
-      var sucessData = {
-        'eventId': widget.eventDetails['id'].toString(),
-        'userId': userIndexId,
-        'data': dataJson,
-        'orderdetails': orderdetails,
-      };
-
-      print("sucess events $sucessData");
-      // paymentSucessResponse(sucessData);
+      paymentSucceApiCall("");
     } else {
-      openCheckout(totalpayable);
+      if (isLiveMode) {
+        openCheckout(totalpayable);
+      }
     }
   }
 
@@ -298,19 +396,23 @@ class _ReviewbookingState extends State<Reviewbooking> {
     checkwtyPrice();
     amountConvert();
 
-    // _razorpay = Razorpay();
-    // _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    // _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     // _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     print("eventdetails sec " + widget.eventDetails.toString());
     super.initState();
   }
+
+  var finaltotalpayable = 0.0;
 
   amountConvert() {
     //  totalpayable =  double.parse(widget.bookingDetails['additionalFeeDetils']['grand_total']);
     double amountDouble = double.parse(
       widget.bookingDetails['additionalFeeDetils']['grand_total'],
     );
+
+    finaltotalpayable = amountDouble;
     totalpayable = (amountDouble * 100).round(); // Converting to paise
     getTicketPrice();
     getTicketQuantity();
@@ -333,6 +435,7 @@ class _ReviewbookingState extends State<Reviewbooking> {
       int qty = item['qty'];
       return qty;
     }).toList();
+    sumCart();
   }
 
   bool _isbtnLoading = false;
@@ -668,10 +771,7 @@ class _ReviewbookingState extends State<Reviewbooking> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        "₹ " +
-                                                            widget
-                                                                .bookingDetails['additionalFeeDetils']['con_fees'][i]['price']
-                                                                .toString(),
+                                                        "₹ ${widget.bookingDetails['additionalFeeDetils']['con_fees'][i]['price']}",
                                                       ),
                                                     ],
                                                   ),
@@ -798,68 +898,77 @@ class _ReviewbookingState extends State<Reviewbooking> {
                   ],
                 ),
               ),
+              Container(
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          height: 45,
+                          margin: EdgeInsets.only(right: 1),
+                          decoration: BoxDecoration(
+                            gradient: gradient_btn_lift,
+                          ),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Container(
-                        height: 45,
-                        decoration: BoxDecoration(gradient: gradient_btn_lift),
-
-                        child: Center(
-                          child: Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Text(
-                                  'Edit',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
+                          child: Center(
+                            child: Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Text(
+                                    'Edit',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 1),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          _isbtnLoading = true;
-                        });
-                        // _isbtnLoading == true ??
-                        // _showLoadingDialog(context);
-                        sumCart();
-                      },
-                      child: Container(
-                        height: 45,
-                        decoration: BoxDecoration(gradient: gradient_btn_rigth),
-                        width: MediaQuery.of(context).size.width / 2,
 
-                        child: Center(
-                          child: Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  totalpayable != 0 ? 'Pay Now' : "Book Now",
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ],
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isbtnLoading = true;
+                          });
+                          // _isbtnLoading == true ??
+                          // _showLoadingDialog(context);
+                          // sumCart();
+
+                          _onBookingSubmit(sumCartApiResponse);
+                        },
+                        child: Container(
+                          height: 45,
+                          decoration: BoxDecoration(
+                            gradient: gradient_btn_rigth,
+                          ),
+                          width: MediaQuery.of(context).size.width / 2,
+
+                          child: Center(
+                            child: Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    totalpayable != 0 ? 'Pay Now' : "Book Now",
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),

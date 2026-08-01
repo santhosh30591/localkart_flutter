@@ -1,7 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
-
-import 'package:localkart/theams_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DBHelper {

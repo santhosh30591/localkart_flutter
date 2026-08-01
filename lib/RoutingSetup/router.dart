@@ -14,6 +14,7 @@ import 'package:localkart/pages/Dashboard/manage_business/posts/job_post.dart';
 import 'package:localkart/pages/Dashboard/manage_business/suscribers_list.dart';
 import 'package:localkart/pages/Dashboard/manage_business/ticketNxt/eventsList.dart';
 import 'package:localkart/pages/Dashboard/menu/Notification/notification.dart';
+import 'package:localkart/pages/Dashboard/menu/my_rewards_page.dart';
 import 'package:localkart/pages/Dashboard/menu/tens_invoice/invoice_list.dart';
 import 'package:localkart/pages/Dashboard/menu/feedback.dart';
 import 'package:localkart/pages/Dashboard/menu/mybookingspage.dart';
@@ -42,135 +43,135 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   final arg = settings.arguments;
 
   switch (settings.name) {
-  // case root_home:
-  //   return MaterialPageRoute(builder: (context) => HomePage());
-  case root_dashboard:
-  return MaterialPageRoute(builder: (context) => DashboardPage());
-  case root_splash:
-  return MaterialPageRoute(builder: (context) => SplashScreen());
-  case root_profile_nav:
-  return MaterialPageRoute(builder: (context) => Profile());
-  case root_login:
-  return MaterialPageRoute(builder: (context) => Login());
-  case root_register:
-  return MaterialPageRoute(builder: (context) => Register());
-  //
-  case root_business:
-  return MaterialPageRoute(builder: (context) => Business());
-  //
-  case root_business_basic:
-  return MaterialPageRoute(builder: (context) => RegisterBusiness());
-  //
-  case root_business_basic_update:
-  return MaterialPageRoute(builder: (context) => UpdateBusiness());
-  //
-  case root_business_job:
-  return MaterialPageRoute(builder: (context) => JobPost());
+    // case root_home:
+    //   return MaterialPageRoute(builder: (context) => HomePage());
+    case root_dashboard:
+      return MaterialPageRoute(builder: (context) => DashboardPage());
+    case root_splash:
+      return MaterialPageRoute(builder: (context) => SplashScreen());
+    case root_profile_nav:
+      return MaterialPageRoute(builder: (context) => Profile());
+    case root_login:
+      return MaterialPageRoute(builder: (context) => Login());
+    case root_register:
+      return MaterialPageRoute(builder: (context) => Register());
+    //
+    case root_business:
+      return MaterialPageRoute(builder: (context) => Business());
+    //
+    case root_business_basic:
+      return MaterialPageRoute(builder: (context) => RegisterBusiness());
+    //
+    case root_business_basic_update:
+      return MaterialPageRoute(builder: (context) => UpdateBusiness());
+    //
+    case root_business_job:
+      return MaterialPageRoute(builder: (context) => JobPost());
 
-  case root_business_create_post:
-  return MaterialPageRoute(builder: (context) => CreatePosts());
+    case root_business_create_post:
+      return MaterialPageRoute(builder: (context) => CreatePosts());
 
-  // case root_help_support:
-  //   return MaterialPageRoute(builder: (context) => HelpSupport());
-  //
-  case root_business_digital_Vcard:
-  return MaterialPageRoute(builder: (context) => DigitalVcardDetails());
-  //
-  case root_business_ads:
-  return MaterialPageRoute(builder: (context) => AdsHostory());
-  //
-  case root_business_subScription:
-  return MaterialPageRoute(builder: (context) => SubscriptionPlans());
-  case root_business_subscribers_list:
-  return MaterialPageRoute(builder: (context) => SubscribersListPage());
-  //
-  case business_subscriptin_history:
-  return MaterialPageRoute(builder: (context) => SubscriptionHistorys());
-  case business_lead:
-  return MaterialPageRoute(
-  builder: (context) => CustomerLeardsPage(datas: arg),
-  );
+    // case root_help_support:
+    //   return MaterialPageRoute(builder: (context) => HelpSupport());
+    //
+    case root_business_digital_Vcard:
+      return MaterialPageRoute(builder: (context) => DigitalVcardDetails());
+    //
+    case root_business_ads:
+      return MaterialPageRoute(builder: (context) => AdsHostory());
+    //
+    case root_business_subScription:
+      return MaterialPageRoute(builder: (context) => SubscriptionPlans());
+    case root_business_subscribers_list:
+      return MaterialPageRoute(builder: (context) => SubscribersListPage());
+    //
+    case business_subscriptin_history:
+      return MaterialPageRoute(builder: (context) => SubscriptionHistorys());
+    case business_lead:
+      return MaterialPageRoute(
+        builder: (context) => CustomerLeardsPage(datas: arg),
+      );
 
-  case business_digital_subscriptin_list:
-  return MaterialPageRoute(builder: (context) => SubscriptionPlansList());
-  //
-  case root_notification_list:
-  return MaterialPageRoute(builder: (context) => NotificationDetailsList());
+    case business_digital_subscriptin_list:
+      return MaterialPageRoute(builder: (context) => SubscriptionPlansList());
+    //
+    case root_notification_list:
+      return MaterialPageRoute(builder: (context) => NotificationDetailsList());
 
-  case root_trans_list:
-  return MaterialPageRoute(builder: (context) => TransInvoiceList());
+    case root_trans_list:
+      return MaterialPageRoute(builder: (context) => TransInvoiceList());
 
-  // case root_trans_list:
-  //   return MaterialPageRoute(builder: (context) => TransInvoiceList());
+    // case root_trans_list:
+    //   return MaterialPageRoute(builder: (context) => TransInvoiceList());
 
-  //
-  case root_my_bookings:
-  return MaterialPageRoute(builder: (context) => MybookingsPage());
+    //
+    case root_my_bookings:
+      return MaterialPageRoute(builder: (context) => MybookingsPage());
+    case root_my_rewards:
+      return MaterialPageRoute(builder: (context) => MyRewardsPage());
 
-  //
-  case view_my_bookings:
-  return MaterialPageRoute(
-  builder: (context) => TicketDetailsScreen(datas: arg),
-  );
-  //
-  case root_feedback:
-  return MaterialPageRoute(builder: (context) => FeedBack());
+    //
+    case view_my_bookings:
+      return MaterialPageRoute(
+        builder: (context) => TicketDetailsScreen(datas: arg),
+      );
+    //
+    case root_feedback:
+      return MaterialPageRoute(builder: (context) => FeedBack());
 
-  case root_search:
-  return MaterialPageRoute(builder: (context) => ServicesSerching());
-  //
-  case root_services_more_details:
-  return MaterialPageRoute(
-  builder: (context) => ServicesMoreDetails(setviceDetails: arg),
-  );
-  //
-  //
-  case root_ticketNxt:
-  return MaterialPageRoute(
-  builder: (context) => ManageEventsListing(),
-  );
-  //
-  case root_services_list:
-  return MaterialPageRoute(builder: (context) => ServicesList(datas: arg));
-  case root_referal:
-  return MaterialPageRoute(builder: (context) => ReferalDetails());
-  //
-  case root_services_details:
-  return MaterialPageRoute(
-  builder: (context) => ServicesDetails(roots: arg),
-  );
+    case root_search:
+      return MaterialPageRoute(builder: (context) => ServicesSerching());
+    //
+    case root_services_more_details:
+      return MaterialPageRoute(
+        builder: (context) => ServicesMoreDetails(setviceDetails: arg),
+      );
+    //
+    //
+    case root_ticketNxt:
+      return MaterialPageRoute(builder: (context) => ManageEventsListing());
+    //
+    case root_services_list:
+      return MaterialPageRoute(builder: (context) => ServicesList(datas: arg));
+    case root_referal:
+      return MaterialPageRoute(builder: (context) => ReferalDetails());
+    //
+    case root_services_details:
+      return MaterialPageRoute(
+        builder: (context) => ServicesDetails(roots: arg),
+      );
 
-  case root_web_view_nav:
-  return MaterialPageRoute(builder: (context) => WebViewLoad(roots: arg));
+    case root_web_view_nav:
+      return MaterialPageRoute(builder: (context) => WebViewLoad(roots: arg));
 
-  case root_billpay_opertor_list:
-  return MaterialPageRoute(
-  builder: (context) => BillPayOperateList(datas: arg),
-  );
-  case root_enter_card_details:
-  return MaterialPageRoute(
-  builder: (context) => BillFatchInfoEnterCard(datas: arg),
-  );
-  case root_fetch_balance:
-  return MaterialPageRoute(
-  builder: (context) => FetchBalanceDetails(datas: arg),
-  );
+    case root_billpay_opertor_list:
+      return MaterialPageRoute(
+        builder: (context) => BillPayOperateList(datas: arg),
+      );
+    case root_enter_card_details:
+      return MaterialPageRoute(
+        builder: (context) => BillFatchInfoEnterCard(datas: arg),
+      );
+    case root_fetch_balance:
+      return MaterialPageRoute(
+        builder: (context) => FetchBalanceDetails(datas: arg),
+      );
 
-  case root_webview_payment:
-  return MaterialPageRoute(
-  builder: (context) => WebViewPaymentGateway(datas: arg),
-  );
-  // case root_bookNow:
-  //   return MaterialPageRoute(builder: (context) => BookNowPage(eventId: arg));
+    case root_webview_payment:
+      return MaterialPageRoute(
+        builder: (context) => WebViewPaymentGateway(datas: arg),
+      );
+    // case root_bookNow:
+    //   return MaterialPageRoute(builder: (context) => BookNowPage(eventId: arg));
 
-  case root_view_billbay_status:
-  return MaterialPageRoute(
-  builder: (context) => TransStatusDetails(datas: arg),
-  );
-  case root_billbay_history:
-  return MaterialPageRoute(builder: (context) => TransHistory());
+    case root_view_billbay_status:
+      return MaterialPageRoute(
+        builder: (context) => TransStatusDetails(datas: arg),
+      );
+    case root_billbay_history:
+      return MaterialPageRoute(builder: (context) => TransHistory());
 
-  default:
-  return MaterialPageRoute(builder: (context) => UndefinedView(name: ""));
+    default:
+      return MaterialPageRoute(builder: (context) => UndefinedView(name: ""));
   }
 }

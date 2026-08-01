@@ -50,7 +50,7 @@ class TicketCountResult {
   String? image;
   String? instructionTitle;
 
-  // String? instructions;
+  dynamic? instructions;
 
   TicketCountResult({
     this.id,
@@ -69,7 +69,7 @@ class TicketCountResult {
     this.contactEmail,
     this.image,
     this.instructionTitle,
-    // this.instructions,
+    this.instructions,
   });
 
   TicketCountResult.fromJson(Map<String, dynamic> json) {
@@ -94,7 +94,7 @@ class TicketCountResult {
     contactEmail = json['contact_email'];
     image = json['image'];
     instructionTitle = json['instruction_title'];
-    // instructions = json['instructions'];
+    instructions = json['instructions'];
   }
 
   Map<String, dynamic> toJson() {
@@ -117,7 +117,7 @@ class TicketCountResult {
     data['contact_email'] = this.contactEmail;
     data['image'] = this.image;
     data['instruction_title'] = this.instructionTitle;
-    // data['instructions'] = this.instructions;
+    data['instructions'] = this.instructions;
     return data;
   }
 }
@@ -125,7 +125,7 @@ class TicketCountResult {
 class Ticket {
   String? name;
   String? admitPerson;
-  List<String>? ticketNotes;
+
   int? price;
   int? order;
   int? ticketcount;
@@ -144,7 +144,7 @@ class Ticket {
   Ticket({
     this.name,
     this.admitPerson,
-    this.ticketNotes,
+
     this.price,
     this.order,
     this.ticketcount,
@@ -161,7 +161,7 @@ class Ticket {
   Ticket.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     admitPerson = json['admit_person'];
-    ticketNotes = json['ticket_notes'].cast<String>();
+
     price = json['price'];
     order = json['order'];
     ticketcount = json['ticketcount'];
@@ -178,8 +178,7 @@ class Ticket {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
-    data['admit_person'] = this.admitPerson;
-    data['ticket_notes'] = this.ticketNotes;
+
     data['price'] = this.price;
     data['order'] = this.order;
     data['ticketcount'] = this.ticketcount;

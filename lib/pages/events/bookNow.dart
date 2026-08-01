@@ -63,18 +63,15 @@ class _BookNowPageState extends State<BookNowPage> {
   var totalPrice = 0;
   List<Ticket> ticket = [];
 
+  var eventticketavailablity = EventDetailsTicketCountModel();
+
   _checkTicketAvailabilty() async {
     isLoading = true;
-
-
 
     setState(() {});
     var response = await EventsProvider().checkTicketAvailability(
       widget.eventId,
     );
-
-
-
 
     if (response != null) {
       // var event = response['result'];
@@ -85,9 +82,9 @@ class _BookNowPageState extends State<BookNowPage> {
         try {
           var datas = json.decode(response.body.toString());
 
-          var model = EventDetailsTicketCountModel.fromJson(datas);
+          eventticketavailablity = EventDetailsTicketCountModel.fromJson(datas);
 
-          ticket = model.result!.ticket!;
+          ticket = eventticketavailablity.result!.ticket!;
 
           print("ticket count " + ticket.length.toString());
         } catch (e) {
@@ -95,8 +92,6 @@ class _BookNowPageState extends State<BookNowPage> {
         }
 
         eventdetails = json.decode(response.body)['result'];
-
-
 
         setState(() {
           totalPrice = 0;
@@ -624,47 +619,47 @@ class _BookNowPageState extends State<BookNowPage> {
                                                 right: 10,
                                                 top: 5,
                                               ),
-                                              child: ListView.builder(
-                                                shrinkWrap: true,
-                                                physics:
-                                                    const NeverScrollableScrollPhysics(),
-                                                itemCount: ticket[i]
-                                                    .ticketNotes!
-                                                    .length,
-
-                                                itemBuilder: (context, j) {
-                                                  return Container(
-                                                    padding: EdgeInsets.only(
-                                                      bottom: 3,
-                                                    ),
-                                                    child: Row(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          size: 17,
-                                                          Icons
-                                                              .check_circle_outline,
-                                                          color: Colors.grey,
-                                                        ),
-                                                        SizedBox(width: 5),
-                                                        Expanded(
-                                                          child: Text(
-                                                            ticket[i]
-                                                                .ticketNotes![j],
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                              color:
-                                                                  Colors.grey,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                },
-                                              ),
+                                              // child: ListView.builder(
+                                              //   shrinkWrap: true,
+                                              //   physics:
+                                              //       const NeverScrollableScrollPhysics(),
+                                              //   itemCount: ticket[i]
+                                              //       .ticketNotes!
+                                              //       .length,
+                                              //
+                                              //   itemBuilder: (context, j) {
+                                              //     return Container(
+                                              //       padding: EdgeInsets.only(
+                                              //         bottom: 3,
+                                              //       ),
+                                              //       child: Row(
+                                              //         crossAxisAlignment:
+                                              //             CrossAxisAlignment
+                                              //                 .center,
+                                              //         children: [
+                                              //           Icon(
+                                              //             size: 17,
+                                              //             Icons
+                                              //                 .check_circle_outline,
+                                              //             color: Colors.grey,
+                                              //           ),
+                                              //           SizedBox(width: 5),
+                                              //           Expanded(
+                                              //             child: Text(
+                                              //               ticket[i]
+                                              //                   .ticketNotes![j],
+                                              //               style: TextStyle(
+                                              //                 fontSize: 14,
+                                              //                 color:
+                                              //                     Colors.grey,
+                                              //               ),
+                                              //             ),
+                                              //           ),
+                                              //         ],
+                                              //       ),
+                                              //     );
+                                              //   },
+                                              // ),
                                             ),
                                           ],
                                         ),
@@ -731,7 +726,26 @@ class _BookNowPageState extends State<BookNowPage> {
                       ),
                       InkWell(
                         onTap: () {
-                          _bookNow();
+                          if (eventticketavailablity
+                                  .result!
+                                  .instructions!
+                                  .length >
+                              6) {
+                            bookingTermsCondiction(
+                              context,
+
+                              eventticketavailablity.result!.instructions!,
+                              () {
+                                Navigator.pop(context);
+                              },
+                              () {
+                                Navigator.pop(context);
+                                _bookNow();
+                              },
+                            );
+                          } else {
+                            _bookNow();
+                          }
                         },
                         child: Container(
                           height: 50,
@@ -768,7 +782,7 @@ class _BookNowPageState extends State<BookNowPage> {
         totalPrice = totalPrice + ticket[i].comboPrice! * ticket[i].ticktes;
         print("select combo price - " + ticket[i].comboPrice!.toString());
       } else {
-       totalPrice = totalPrice + ticket[i].price! * ticket[i].ticktes;
+        totalPrice = totalPrice + ticket[i].price! * ticket[i].ticktes;
       }
 
       ticketDetails.add({

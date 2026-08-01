@@ -25,7 +25,7 @@ class SubscriptinAlerts extends StatefulWidget {
 
 class _SubscriptinAlerts extends State<SubscriptinAlerts> {
   var txt_coupon_code = TextEditingController();
-  bool isReferral =  false;
+  bool isReferral = false;
   String referralCode = "";
   String referraltype = "";
   String referralprice = "";
@@ -220,7 +220,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                               children: [
                                 Flexible(
                                   child: Container(
-                                    height: 50,
+                                    // height: 50,
                                     child: TextField(
                                       controller: txt_coupon_code,
                                       maxLength: 12,
@@ -371,6 +371,7 @@ class _SubscriptinAlerts extends State<SubscriptinAlerts> {
                                     "code": "" + referralCode,
                                     "type": "" + referraltype,
                                     "price": referralprice,
+                                    // "price": referralprice,
                                   };
                                   Navigator.pop(context, datas);
                                 }
