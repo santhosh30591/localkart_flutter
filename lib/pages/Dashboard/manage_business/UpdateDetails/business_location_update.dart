@@ -26,11 +26,14 @@ class LocationMapsDetailsUpdate extends StatefulWidget {
   _LocationMapsDetailsUpdate createState() => _LocationMapsDetailsUpdate();
 }
 
+
+
+var api_key = "AIzaSyACGIzqaqhs_QP96ovfWW3uOXhWjenQyMY";
+
 class _LocationMapsDetailsUpdate extends State<LocationMapsDetailsUpdate> {
   // late Location _location;
   late Map<String, Object> register;
   late GetBusinessDetailsModel getBusiness;
-  var api_key = "AIzaSyC6e1oG9ODcguxJcHKl0OYeR-D4K-MIrs8";
 
   @override
   void dispose() {

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:localkart/RoutingSetup/router-constants.dart';
 import 'package:localkart/model/bill_pay_model/view_status_details_model.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/buttons.dart';
@@ -236,6 +237,17 @@ void scarchCard(BuildContext context, RewardDetails result) {
                   child: InkWell(
                     onTap: () {
                       Navigator.pop(context);
+
+                      Map<String, String> roots = {
+                        "id":
+                            result.id.toString() ??
+                            "192", // Replace with the actual ID",
+                      };
+
+                      print("roots $roots");
+                      Navigator.of(
+                        context,
+                      ).pushNamed(view_my_rewards, arguments: roots);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(

@@ -40,34 +40,10 @@ class _TicketScannerPageState extends State<TicketScannerPage> {
   @override
   void reassemble() {
     super.reassemble();
-    // if (Platform.isAndroid) {
-    //   controller?.pauseCamera();
-    // }
-    // controller?.resumeCamera();
   }
 
   bool isQRCodeVisible = false;
   bool listen = true;
-
-  // void _onQRViewCreated(QRViewController qrController) {
-  //   controller = qrController;
-  //   setState(() {
-  //     isQRCodeVisible = false;
-  //   });
-  //
-  //   controller!.scannedDataStream.listen((scanData) {
-  //     setState(() {
-  //       isQRCodeVisible = scanData != null;
-  //     });
-  //
-  //     if (listen) {
-  //       setState(() {
-  //         listen = false;
-  //       });
-  //       _onScan(scanData.code.toString());
-  //     }
-  //   });
-  // }
 
   void _onScan(String bookingId) async {
     var userId = await DBHelper().getLoginSubDB("Id");
@@ -96,30 +72,15 @@ class _TicketScannerPageState extends State<TicketScannerPage> {
     }
   }
 
-  // void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
-  //   print('${DateTime.now().toIso8601String()}_onPermissionSet $p');
-  //   if (!p) {
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(const SnackBar(content: Text('no Permission')));
-  //   }
-  // }
-
   bool isExpanded = false;
-
-  // final _dialogformKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final MediaQueryData mediaQueryData = MediaQuery.of(context);
-    final double screenHeight = mediaQueryData.size.height;
-    final double screenWidth = mediaQueryData.size.width;
     return actionBarTopBottomView(
       "Scan",
       context,
@@ -130,10 +91,10 @@ class _TicketScannerPageState extends State<TicketScannerPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.all(4),
-              color: app_theam[100],
+              padding: const EdgeInsets.all(5),
+              color: app_colorSecondary,
               width: MediaQuery.of(context).size.width,
-              height: 40,
+
               child: Center(
                 child: Html(
                   data: '${widget.eventName ?? ""}',
@@ -156,7 +117,7 @@ class _TicketScannerPageState extends State<TicketScannerPage> {
 
             Center(
               child: Container(
-                color: Colors.green,
+                color: Colors.black,
                 padding: EdgeInsets.all(15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -165,8 +126,8 @@ class _TicketScannerPageState extends State<TicketScannerPage> {
                       "Point the QR Code",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
@@ -189,7 +150,7 @@ class _TicketScannerPageState extends State<TicketScannerPage> {
                   child: Container(
                     margin: EdgeInsets.only(right: 1),
                     // width: screenWidth / 2,
-                    decoration: BoxDecoration(gradient: gradient_btn_rigth),
+                    decoration: BoxDecoration(gradient: gradient_btn_lift),
                     child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -215,7 +176,7 @@ class _TicketScannerPageState extends State<TicketScannerPage> {
                     );
                   },
                   child: Container(
-                    decoration: BoxDecoration(gradient: gradient_btn_lift),
+                    decoration: BoxDecoration(gradient: gradient_btn_rigth),
                     child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -249,7 +210,7 @@ class _TicketScannerPageState extends State<TicketScannerPage> {
     return MobileScanner(
       onDetect: (capture) {
         final List<Barcode> barcodes = capture.barcodes;
-        for (final barcode in barcodes){
+        for (final barcode in barcodes) {
           debugPrint(
             'Found code: ${barcode.rawValue}',
           ); // Handle the scanned data
@@ -259,7 +220,6 @@ class _TicketScannerPageState extends State<TicketScannerPage> {
           } else {
             qr_code = barcode.rawValue.toString();
             _onScan(qr_code);
-
           }
         }
       },

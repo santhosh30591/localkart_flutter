@@ -416,9 +416,7 @@ class _DirectoryList extends State<DirectoryList> {
                                 ),
                                 listSetvices[index].viewCount != 0
                                     ? Text(
-                                        " " +
-                                            listSetvices[index].viewCount
-                                                .toString(),
+                                        " ${listSetvices[index].viewCount}",
                                         style: const TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey,
@@ -426,7 +424,7 @@ class _DirectoryList extends State<DirectoryList> {
                                         ),
                                       )
                                     : const Text(
-                                        "" + "0",
+                                      "0",
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey,

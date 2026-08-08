@@ -280,7 +280,7 @@ class _BusinessFormState extends State<Business> {
                                   } else {
                                     Navigator.of(
                                       context,
-                                    ).pushNamed(root_business_create_post);
+                                    ).pushNamed(root_manage_rewards);
                                   }
                                 },
                               ),
@@ -551,8 +551,6 @@ class _BusinessFormState extends State<Business> {
                                                 .toString(),
                                           );
                                         } else {
-
-
                                           Navigator.of(
                                             context,
                                           ).pushNamed(root_ticketNxt);

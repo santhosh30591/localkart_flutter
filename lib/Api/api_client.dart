@@ -3,11 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:localkart/unit/showing.dart';
 
 import 'config.dart';
-
-import 'dart:convert' as convert;
 
 class ApiClient {
   late BuildContext context;
@@ -40,8 +37,7 @@ class ApiClient {
       // Triggers if the entire data transfer takes longer than 10 seconds
       print('Request timed out: $e');
       throw 'The server took too long to respond. Please try again.';
-
-    }catch (e) {
+    } catch (e) {
       print(" Method url $url  error - $e");
       throw "Unable to retrieve posts.";
     }
@@ -53,8 +49,7 @@ class ApiClient {
       Uri.parse(url),
       body: input,
       headers: {"Content-Type": "application/x-www-form-urlencoded"},
-    ).timeout( Duration(seconds: 10)); // Limits entire request duration
-
+    ).timeout(Duration(seconds: 10));
 
     print("Response code  ${res.statusCode} body - ${res.body}");
 
@@ -68,8 +63,7 @@ class ApiClient {
       // Triggers if the entire data transfer takes longer than 10 seconds
       print('Request timed out: $e');
       throw 'The server took too long to respond. Please try again.';
-
-    }catch (e) {
+    } catch (e) {
       print(" Method url $url and  inputs $input error - $e ");
       throw "Unable to retrieve posts.";
     }
@@ -79,6 +73,18 @@ class ApiClient {
 class ApiClientLocalKart {
   String Tag = "Old ";
 
+  Future<Response> httpGetOrder(String url) async {
+    print("Get Method url - " + url);
+
+    Response res = await get(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    );
+
+    print(" $Tag Resonces order - " + res.body.toString());
+
+    return res;
+  }
   Future<Response> httpGet(String url) async {
     print("Get Method url - " + url);
 

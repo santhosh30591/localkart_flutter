@@ -12,7 +12,6 @@ import 'package:localkart/unit/action_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ManageEventsListing extends StatefulWidget {
-  static const routeName = '/events';
 
   ManageEventsListing({Key? key}) : super(key: key);
 
@@ -23,6 +22,8 @@ class ManageEventsListing extends StatefulWidget {
 class _ManageEventsListingState extends State<ManageEventsListing> {
   bool isLoaded = false;
   List eventsList = [];
+
+  String message = "";
 
   @override
   void initState() {
@@ -39,8 +40,11 @@ class _ManageEventsListingState extends State<ManageEventsListing> {
     if (response != null) {
       setState(() {
         var datas = json.decode(response.body.toString());
-
-        eventsList = datas["result"];
+        if (datas["errorCode"].toString() == "0") {
+          eventsList = datas["result"];
+        } else {
+          message = datas["message"];
+        }
         isLoaded = false;
 
         print("data is loading " + eventsList.length.toString());
@@ -60,222 +64,240 @@ class _ManageEventsListingState extends State<ManageEventsListing> {
       isLoaded
           ? const Center(child: CircularProgressIndicator())
           : Scaffold(
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      for (int i = 0; i < eventsList.length; i++)
-                        Card(
-                          margin: const EdgeInsets.only(bottom: 20),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(13),
-                          ),
-                          elevation: 4,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width - 10,
-                            child: Column(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  child: Image.network(
-                                    eventsList[i]['image'].toString(),
-                                    fit: BoxFit.fill,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child;
-                                          }
-                                          return Container(
-                                            height: 180,
-                                            decoration: const BoxDecoration(
-                                              image: DecorationImage(
-                                                image: AssetImage(
-                                                  "assets/loading.gif",
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        height: 180,
-                                        decoration: const BoxDecoration(
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                              "assets/loading.gif",
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
+              body: eventsList.length == 0
+                  ? Center(child: Text(message, style: TextStyle(fontSize: 16)))
+                  : SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            for (int i = 0; i < eventsList.length; i++)
+                              Card(
+                                margin: const EdgeInsets.only(bottom: 20),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(13),
                                 ),
-
-                                Container(
-                                  color: app_theam[100],
-                                  width: MediaQuery.of(context).size.width,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0,
-                                      ),
-                                      child: Html(
-                                        data: '${eventsList[i]['eventname']}',
-                                        style: {
-                                          "body": Style(
-                                            color: app_theam,
-                                            textAlign: TextAlign.center,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(5),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                elevation: 4,
+                                child: SizedBox(
+                                  width: MediaQuery.of(context).size.width - 10,
+                                  child: Column(
                                     children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: SizedBox(
-                                              height: 18,
-                                              width: 18,
-                                              child: Image.asset(
-                                                "assets/calendar_outlined.png",
-                                              ),
-                                            ),
-                                          ),
-                                          Text(eventsList[i]['date']),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          const Padding(
-                                            padding: EdgeInsets.all(4.0),
-                                            child: Icon(
-                                              Icons.location_on_outlined,
-                                              size: 20,
-                                            ),
-                                          ),
-                                          Text(eventsList[i]['district']),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    EventDetailsPage(
-                                                      context,
-                                                      flag: 2,
-                                                      eventId:
-                                                          eventsList[i]['event_id'],
-                                                    ),
-                                              ),
-                                            );
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              gradient: gradient_btn_lift,
-                                              borderRadius:
-                                                  const BorderRadius.only(
-                                                    bottomLeft: Radius.circular(
-                                                      13,
-                                                    ),
-                                                  ),
-                                            ),
-                                            height: 45,
-
-                                            child: const Center(
-                                              child: Text(
-                                                'Details',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                          10.0,
                                         ),
-                                      ),
-
-                                      Container(height: 15, width: 1),
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            {
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      TicketScannerPage(
-                                                        eventId:
-                                                            eventsList[i]['event_id'],
-                                                        scanUserId: 0,
-                                                        eventName:
-                                                            eventsList[i]['eventname']
-                                                                .toString(),
+                                        child: Image.network(
+                                          eventsList[i]['image'].toString(),
+                                          fit: BoxFit.fill,
+                                          loadingBuilder:
+                                              (
+                                                context,
+                                                child,
+                                                loadingProgress,
+                                              ) {
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                }
+                                                return Container(
+                                                  height: 180,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: AssetImage(
+                                                            "assets/loading.gif",
+                                                          ),
+                                                        ),
                                                       ),
-                                                ),
-                                              );
+                                                );
+                                              },
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Container(
+                                                  height: 180,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: AssetImage(
+                                                            "assets/loading.gif",
+                                                          ),
+                                                        ),
+                                                      ),
+                                                );
+                                              },
+                                        ),
+                                      ),
 
-
-                                            }
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              gradient: gradient_btn_rigth,
-                                              borderRadius:
-                                                  const BorderRadius.only(
-                                                    bottomRight:
-                                                        Radius.circular(13),
-                                                  ),
+                                      Container(
+                                        color: app_theam[100],
+                                        width: MediaQuery.of(
+                                          context,
+                                        ).size.width,
+                                        child: Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10.0,
                                             ),
-                                            height: 45,
-                                            width: screenWidth / 2 + 2,
-                                            child: const Center(
-                                              child: Text(
-                                                'Scan',
-                                                style: TextStyle(
-                                                  color: Colors.white,
+                                            child: Html(
+                                              data:
+                                                  '${eventsList[i]['eventname']}',
+                                              style: {
+                                                "body": Style(
+                                                  color: app_theam,
+                                                  textAlign: TextAlign.center,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.all(5),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    4.0,
+                                                  ),
+                                                  child: SizedBox(
+                                                    height: 18,
+                                                    width: 18,
+                                                    child: Image.asset(
+                                                      "assets/calendar_outlined.png",
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(eventsList[i]['date']),
+                                              ],
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.all(4.0),
+                                                  child: Icon(
+                                                    Icons.location_on_outlined,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                                Text(eventsList[i]['district']),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EventDetailsPage(
+                                                            context,
+                                                            flag: 2,
+                                                            eventId:
+                                                                eventsList[i]['event_id'],
+                                                          ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    gradient: gradient_btn_lift,
+                                                    borderRadius:
+                                                        const BorderRadius.only(
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                13,
+                                                              ),
+                                                        ),
+                                                  ),
+                                                  height: 45,
+
+                                                  child: const Center(
+                                                    child: Text(
+                                                      'Details',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
+
+                                            Container(height: 15, width: 1),
+                                            Expanded(
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  {
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            TicketScannerPage(
+                                                              eventId:
+                                                                  eventsList[i]['event_id'],
+                                                              scanUserId: 0,
+                                                              eventName:
+                                                                  eventsList[i]['eventname']
+                                                                      .toString(),
+                                                            ),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    gradient:
+                                                        gradient_btn_rigth,
+                                                    borderRadius:
+                                                        const BorderRadius.only(
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                13,
+                                                              ),
+                                                        ),
+                                                  ),
+                                                  height: 45,
+                                                  width: screenWidth / 2 + 2,
+                                                  child: const Center(
+                                                    child: Text(
+                                                      'Scan',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-                ),
-              ),
+                      ),
+                    ),
               bottomNavigationBar: InkWell(
                 onTap: () async {
                   await launch('https://localkart.app/portal/events/authlogin');

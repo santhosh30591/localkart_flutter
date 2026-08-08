@@ -776,6 +776,8 @@ class _NavBar extends State<NavBar> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
+                  padding: EdgeInsets.all(image_higth),
+                  margin: EdgeInsets.only(left: image_left),
                   child: Image.asset(
                     'assets/ic_ration.png',
                     width: menuImgHeightWidth,
@@ -783,9 +785,6 @@ class _NavBar extends State<NavBar> {
                     fit: BoxFit.cover,
                     color: Colors.black54,
                   ),
-                  // child: Icon(Icons.play_circle_outline),
-                  padding: EdgeInsets.all(image_higth),
-                  margin: EdgeInsets.only(left: image_left),
                 ),
                 SizedBox(width: image_space),
                 const Text(
@@ -818,18 +817,12 @@ class _NavBar extends State<NavBar> {
                     "https://play.google.com/store/apps/details?id=" +
                         appPackageName,
                   );
-                } finally {
-                  launch(
-                    "https://play.google.com/store/apps/details?id=" +
-                        appPackageName,
-                  );
                 }
               } else if (Platform.isIOS) {
                 launch(
                   "https://testflight.apple.com/v1/invite/302317bc1a79407bb9c13f11890ebb76ec3795425b07407baa436e11cbd57d7461514ce7?ct=99HU8X7PK2&advp=10000&platform=ios",
                 );
               }
-              // launchInBrowser(roots.url);
             },
           ),
           SizedBox(height: menuViewSpace),
@@ -838,6 +831,8 @@ class _NavBar extends State<NavBar> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
+                  padding: EdgeInsets.all(image_higth),
+                  margin: EdgeInsets.only(left: image_left),
                   child: Image.asset(
                     'assets/ic_privacy.png',
                     width: menuImgHeightWidth,
@@ -845,9 +840,6 @@ class _NavBar extends State<NavBar> {
                     fit: BoxFit.cover,
                     color: Colors.black54,
                   ),
-                  // child: Icon(Icons.play_circle_outline),
-                  padding: EdgeInsets.all(image_higth),
-                  margin: EdgeInsets.only(left: image_left),
                 ),
                 SizedBox(width: image_space),
                 const Text(
@@ -861,6 +853,7 @@ class _NavBar extends State<NavBar> {
               ],
             ),
             onTap: () {
+              Navigator.pop(context);
               Map<String, String> roots = {
                 "title": "Privacy Policy",
                 "url": "https://www.localkart.app/privacy-policy.php",
@@ -878,6 +871,8 @@ class _NavBar extends State<NavBar> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
+                    padding: EdgeInsets.all(image_higth),
+                    margin: EdgeInsets.only(left: image_left),
                     child: Image.asset(
                       'assets/ic_logout.png',
                       width: menuImgHeightWidth,
@@ -885,9 +880,6 @@ class _NavBar extends State<NavBar> {
                       fit: BoxFit.cover,
                       color: Colors.black54,
                     ),
-                    // child: Icon(Icons.play_circle_outline),
-                    padding: EdgeInsets.all(image_higth),
-                    margin: EdgeInsets.only(left: image_left),
                   ),
                   SizedBox(width: image_space),
                   const Text(
@@ -912,6 +904,8 @@ class _NavBar extends State<NavBar> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
+                    padding: EdgeInsets.all(image_higth),
+                    margin: EdgeInsets.only(left: image_left),
                     child: Image.asset(
                       'assets/ic_login.png',
                       width: menuImgHeightWidth,
@@ -919,9 +913,6 @@ class _NavBar extends State<NavBar> {
                       fit: BoxFit.cover,
                       color: Colors.black54,
                     ),
-                    // child: Icon(Icons.play_circle_outline),
-                    padding: EdgeInsets.all(image_higth),
-                    margin: EdgeInsets.only(left: image_left),
                   ),
                   SizedBox(width: image_space),
                   const Text(

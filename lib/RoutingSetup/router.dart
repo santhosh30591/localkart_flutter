@@ -1,4 +1,5 @@
 import 'package:localkart/pages/Dashboard/DayTypes/moreDetails/directory_more_deails.dart';
+import 'package:localkart/pages/Dashboard/ai_search_page.dart';
 import 'package:localkart/pages/Dashboard/manage_business/Subscription/subscription.dart';
 import 'package:localkart/pages/Dashboard/manage_business/Subscription/subscription_history.dart';
 import 'package:localkart/pages/Dashboard/manage_business/Subscription/subscription_plan_list.dart';
@@ -11,10 +12,13 @@ import 'package:localkart/pages/Dashboard/manage_business/customer_leads.dart';
 import 'package:localkart/pages/Dashboard/manage_business/digital_vcard.dart';
 import 'package:localkart/pages/Dashboard/manage_business/posts/create_post.dart';
 import 'package:localkart/pages/Dashboard/manage_business/posts/job_post.dart';
+import 'package:localkart/pages/Dashboard/manage_business/rewards/manage_rewards_list.dart';
+import 'package:localkart/pages/Dashboard/manage_business/rewards/rewards_redemptions.dart';
 import 'package:localkart/pages/Dashboard/manage_business/suscribers_list.dart';
 import 'package:localkart/pages/Dashboard/manage_business/ticketNxt/eventsList.dart';
 import 'package:localkart/pages/Dashboard/menu/Notification/notification.dart';
 import 'package:localkart/pages/Dashboard/menu/my_rewards_page.dart';
+import 'package:localkart/pages/Dashboard/menu/reward_details_page.dart';
 import 'package:localkart/pages/Dashboard/menu/tens_invoice/invoice_list.dart';
 import 'package:localkart/pages/Dashboard/menu/feedback.dart';
 import 'package:localkart/pages/Dashboard/menu/mybookingspage.dart';
@@ -96,7 +100,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => SubscriptionPlansList());
     //
     case root_notification_list:
-      return MaterialPageRoute(builder: (context) => NotificationDetailsList());
+      return MaterialPageRoute(
+        builder: (context) => NotificationDetailsList(),
+      ); //
+
+    case root_ai_home:
+      return MaterialPageRoute(builder: (context) => AiSearchPage());
 
     case root_trans_list:
       return MaterialPageRoute(builder: (context) => TransInvoiceList());
@@ -115,7 +124,17 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => TicketDetailsScreen(datas: arg),
       );
-    //
+
+    case view_my_rewards:
+      return MaterialPageRoute(
+        builder: (context) => RewardDetailsPage(rewardData: arg),
+      );
+
+    case view_my_redemptions:
+      return MaterialPageRoute(
+        builder: (context) => RewardRedemptionsPage(datas: arg),
+      );
+
     case root_feedback:
       return MaterialPageRoute(builder: (context) => FeedBack());
 
@@ -130,6 +149,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     //
     case root_ticketNxt:
       return MaterialPageRoute(builder: (context) => ManageEventsListing());
+
+    case root_manage_rewards:
+      return MaterialPageRoute(builder: (context) => ManageRewardList());
     //
     case root_services_list:
       return MaterialPageRoute(builder: (context) => ServicesList(datas: arg));

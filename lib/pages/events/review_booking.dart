@@ -129,7 +129,6 @@ class _ReviewbookingState extends State<Reviewbooking> {
         'key': 'rzp_live_dPU9HUhjVuJg54',
         'amount': totalpayable,
         'name': userName,
-
         'order_id': TicketbookingOrderId,
         'description': 'Ticket Booking.',
         'event_name': widget.eventDetails['eventname'],
@@ -359,9 +358,7 @@ class _ReviewbookingState extends State<Reviewbooking> {
     if (totalpayable == 0) {
       paymentSucceApiCall("");
     } else {
-      if (isLiveMode) {
-        openCheckout(totalpayable);
-      }
+      openCheckout(totalpayable);
     }
   }
 

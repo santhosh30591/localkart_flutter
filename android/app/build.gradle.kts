@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.localkartmarketing.localkart"
+        applicationId = "com.localkartmarketing.localkart1"
 
         // Explicitly set to 21 to resolve AAR metadata conflicts with modern plugins
         minSdk = flutter.minSdkVersion

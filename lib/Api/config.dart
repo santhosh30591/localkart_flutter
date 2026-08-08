@@ -34,6 +34,7 @@ var urlLogin = "$subBase/login";
 var urlServiceCategories = "$subBase/servicecategories";
 var urlShoppingCategories = "$subBase/shopcategories";
 var urlSubCategorys = "$subBase/";
+var summaryapi = "$subBase/summaryapi";
 var urlState = "$subBase/state";
 var urlDistrict = "$subBase/district";
 var urlSendotpnew = "$subBase/sendotpnew";
@@ -46,6 +47,7 @@ var urlDevicesDetails = "$subBase/updatedeviceid";
 var urlAppversion = "$subBase/appversion";
 
 var shoprating = "$subBase/shoprating";
+var redemption = "$subBase/redemption";
 var servicerating = "$subBase/servicerating";
 
 var shopviewcount = "$subBase/shopviewcount";
@@ -66,6 +68,7 @@ var eventstyles = "$subBase/html_styles";
 var urlAdsHistoryDelete = "$subBase/deletepost";
 var urlDirectoryMore = "$subBase/directorymoredetails";
 var businessEventList = "$subBase/bussinesseventlist";
+var managerewards = "$subBase/managerewards";
 var eventBookingLists = "$subBase/eventbookinglist";
 var scanAgentEventList = "$subBase/scan_eventlist";
 var ScaneventBookingLists = "$subBase/scan_bookedlist";

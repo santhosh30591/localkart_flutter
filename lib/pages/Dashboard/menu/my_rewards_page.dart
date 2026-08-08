@@ -10,8 +10,6 @@ import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/action_bar.dart';
 
 class MyRewardsPage extends StatefulWidget {
-  static const routeName = '/myrewards';
-
   MyRewardsPage({Key? key}) : super(key: key);
 
   @override
@@ -27,10 +25,7 @@ class _MyRewardsPageState extends State<MyRewardsPage> {
       type = "Service";
     }
 
-    var url =
-        "$subBase/myrewards?userId=$userid"
-            "&type=" +
-        type;
+    var url = "$subBase/myrewards?userId=$userid&type=$type";
     var responces = await ApiClientLocalKart().httpGet(url);
 
     return json.decode(responces.body);
@@ -97,210 +92,207 @@ class _TicketWidgetState extends State<TicketWidget> {
 
   @override
   Widget build(BuildContext context) {
+    const double cardHeight = 145.0;
+
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
     // final double screenHeight = mediaQueryData.size.height;
     final double screenWidth = mediaQueryData.size.width - 20;
     return GestureDetector(
       onTap: () {
-        Map<String, String> roots = {
-          "id": widget.ticketData['id'].toString() ?? "",
-        };
-        Navigator.of(context).pushNamed(view_my_bookings, arguments: roots);
+        widget.ticketData['isManaged'] = false;
+        Navigator.of(
+          context,
+        ).pushNamed(view_my_rewards, arguments: widget.ticketData);
+        // Navigator.of(context).pushNamed(view_my_bookings, arguments: roots);
       },
-      child: SingleChildScrollView(
-        child: Container(
-          // padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-          decoration: const BoxDecoration(
-            // image: DecorationImage(
-            //   image: AssetImage('assets/ticketImage.png'),
-            //   fit: BoxFit.fill,
-            // ),
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+      child: buildTicketCard(context, screenWidth, widget),
+    );
+  }
+}
 
-            color: home_service_tab_bg,
+Widget buildTicketCard(BuildContext context, double screenWidth, widget) {
+  // Define a consistent height for the ticket card layout
+  const double cardHeight = 145.0;
+
+  return Container(
+    decoration: const BoxDecoration(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      color: home_service_tab_bg,
+    ),
+    width: screenWidth - 20,
+    height: cardHeight, // Fixes the layout bounds error
+    child: Row(
+      children: [
+        // 1. Left Side: Image Content
+        SizedBox(
+          width: screenWidth / 3.5,
+          height: cardHeight,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10.0),
+              bottomLeft: Radius.circular(10.0),
+            ),
+            child: Image.network(
+              widget.ticketData['reward_image'] ?? "",
+              fit: BoxFit.cover,
+              loadingBuilder:
+                  (
+                    BuildContext context,
+                    Widget child,
+                    ImageChunkEvent? loadingProgress,
+                  ) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+              errorBuilder:
+                  (
+                    BuildContext context,
+                    Object exception,
+                    StackTrace? stackTrace,
+                  ) {
+                    return const Icon(Icons.error);
+                  },
+            ),
           ),
-          width: screenWidth - 20,
-          // height: screenHeight / 4.6,
-          // color: Colors.grey,
-          child: Row(
-            children: [
-              Container(
-                width: screenWidth / 3.5,
+        ),
 
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    // Change 20.0 to your desired radius
-                    bottomLeft: Radius.circular(
-                      10.0,
-                    ), // Change 20.0 to your desired radius
-                  ),
-                  child: Image.network(
-                    widget.ticketData['reward_image'] ?? "",
-                    fit: BoxFit.cover,
-                    loadingBuilder:
-                        (
-                          BuildContext context,
-                          Widget child,
-                          ImageChunkEvent? loadingProgress,
-                        ) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          );
-                        },
-                    errorBuilder:
-                        (
-                          BuildContext context,
-                          Object exception,
-                          StackTrace? stackTrace,
-                        ) {
-                          return const Icon(Icons.error);
-                        },
-                  ),
+        // 2. Middle: Vertical Dotted Line
+        DottedVerticalLineWidget(
+          height: cardHeight,
+          strokeWidth: 2.0,
+          color: const Color.fromARGB(255, 218, 218, 218),
+        ),
+
+        // 3. Right Side: Dynamically sized Details Area
+        // Replaced static SizedBox width with Expanded to prevent horizontal text overflow flags
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12.0,
+              vertical: 8.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Info Section
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.ticketData['shop_name'] ?? "",
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: app_theam,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      widget.ticketData['type'] ?? "",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      widget.ticketData['title'] ?? "",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 12,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              // const SizedBox(width: 10),
-              DottedVerticalLineWidget(
-                height: 145,
-                strokeWidth: 2.0,
-                color: const Color.fromARGB(
-                  255,
-                  218,
-                  218,
-                  218,
-                ), // Specify the desired color of the line
-              ),
-              // const SizedBox(width: 5),
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: SizedBox(
-                  width: screenWidth / 1.50,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: screenWidth / 1.8,
-                        child: Text(
-                          widget.ticketData['shop_name'] ?? "",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: app_theam,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                // Safely pushes bottom content to the baseline of our 145px boundary
+                const Spacer(),
+
+                // Bottom Action & Validity Section
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // const Padding(
-                          //   padding: EdgeInsets.all(2.0),
-                          //   child: Icon(
-                          //     Icons.calendar_month_outlined,
-                          //     size: 18,
-                          //   ),
-                          // ),
                           Text(
-                            widget.ticketData['type'] ?? "",
+                            "Valid Till ${widget.ticketData['expiry'] ?? ''}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 11,
+                              color: Colors.grey,
                             ),
                           ),
-                        ],
-                      ),
-
-                      Text(
-                        widget.ticketData['title'] ?? "",
-                        maxLines: 2,
-
-                        style: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 13,
-                        ),
-                      ),
-
-                      SizedBox(height: 10),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Valid Till " + widget.ticketData['expiry'],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 13,
-                                ),
-                              ),
-
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: app_theam,
-                                  ),
-                                ),
-                                margin: EdgeInsets.all(2),
-                                padding: EdgeInsets.only(left: 5, right: 5),
-                                child: Text(
-                                  widget.ticketData['validupto'] ?? " 0",
-                                  style: TextStyle(
-                                    color: app_theam[400],
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
+                          const SizedBox(height: 2),
                           Container(
                             decoration: BoxDecoration(
-                              color: app_theam,
                               borderRadius: BorderRadius.circular(5),
                               border: Border.all(width: 1, color: app_theam),
                             ),
-
-                            padding: EdgeInsets.only(
-                              left: 10,
-                              right: 10,
-                              top: 5,
-                              bottom: 5,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 1,
                             ),
                             child: Text(
-                              "View",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
+                              widget.ticketData['validupto'] ?? "0",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: app_theam, fontSize: 10),
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 6),
+
+                    // Button Element
+                    Container(
+                      decoration: BoxDecoration(
+                        color: app_theam,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(width: 1, color: app_theam),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 5,
+                      ),
+                      child: const Text(
+                        "View",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }
 
 class DottedVerticalLineWidget extends StatelessWidget {

@@ -260,10 +260,7 @@ class _DashboardPage extends State<DashboardPage> {
                   bottom: true,
 
                   child: Scaffold(
-                    // extendBody: true,
-                    // extendBodyBehindAppBar: true,
                     backgroundColor: Colors.transparent,
-
                     drawer: NavBar(),
 
                     appBar: AppBar(
@@ -329,7 +326,7 @@ class _DashboardPage extends State<DashboardPage> {
                               if (_currentIndex == 0) {
                                 // Navigator.of(context).pushNamed(root_search);
                                 var details = RewardDetails(
-                                  id: 147,
+                                  id: 192,
                                   reward_title: "test title",
                                   reward_type: "Reward typesss",
                                   reward_validity: "12-12-2026",
@@ -394,7 +391,60 @@ class _DashboardPage extends State<DashboardPage> {
                           dashboardModel.errorCode != null &&
                               dashboardModel.errorCode == 2
                           ? networkIssue()
-                          : bottomSelectTabView(),
+                          : Stack(
+                              children: [
+                                bottomSelectTabView(),
+
+                                // Pinned bottom right icon
+                                if (!isLiveMode)
+                                  Positioned(
+                                    bottom: 10.0,
+                                    right: 12.0,
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.of(
+                                          context,
+                                        ).pushNamed(root_ai_home);
+                                      },
+
+                                      child: Container(
+                                        width: 50,
+                                        height: 50,
+                                        padding: const EdgeInsets.all(1.0),
+                                        // 1-pixel padding around the asset
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white,
+                                          // Background color visible through the 1px padding
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(
+                                                0.2,
+                                              ),
+                                              // Shadow color
+                                              spreadRadius: 1,
+                                              // How much the shadow spreads
+                                              blurRadius: 5,
+                                              // How soft the shadow looks
+                                              offset: const Offset(
+                                                0,
+                                                2,
+                                              ), // Shadow position (x, y)
+                                            ),
+                                          ],
+                                        ),
+                                        child: ClipOval(
+                                          child: Image.asset(
+                                            "assets/ic_ai_chart.gif",
+                                            fit: BoxFit
+                                                .cover, // Fills the circular shape perfectly
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
                     ),
 
                     bottomNavigationBar: Column(
