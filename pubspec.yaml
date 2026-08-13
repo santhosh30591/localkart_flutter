@@ -55,6 +55,7 @@ dependencies:
   flutter_cashfree_pg_sdk: ^2.3.4+51
   scratcher: ^2.5.0
   vdocipher_flutter: ^2.8.3
+  gif: ^2.3.0
 
 dev_dependencies:
   flutter_test:

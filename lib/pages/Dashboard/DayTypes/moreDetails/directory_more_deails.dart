@@ -65,7 +65,13 @@ class _ServicesMoreDetails extends State<ServicesMoreDetails> {
             print("inside directorymoredetails 1 ");
 
             services = ServiceDetailsMoreModel.fromJson(datas);
-            print("inside directorymoredetails ");
+
+            final seen = <dynamic>{};
+            services.result!.shopServiceList = services.result!.shopServiceList!
+                .where((item) => seen.add(item.serviceName)) // Returns true if added (first time seen)
+                .toList();
+
+            print("inside directorymoredetailss " +  services.result!.shopServiceList!.length.toString());
             address =
                 "" +
                 services.result!.shopDoorNo.toString() +
@@ -198,6 +204,20 @@ class _ServicesMoreDetails extends State<ServicesMoreDetails> {
                                               indicatorBackgroundColor:
                                                   Colors.grey,
 
+                                              /// Called whenever the page in the center of the viewport changes.
+                                              onPageChanged: (value) {
+                                                select_posication = int.parse(
+                                                  value.toString(),
+                                                );
+                                                // print(
+                                                //   'Page changed s : $select_posication',
+                                                // );
+
+                                                setState(() {});
+                                              },
+                                              autoPlayInterval: 6000,
+                                              isLoop: true,
+
                                               /// The widgets to display in the [ImageSlideshow].
                                               /// Add the sample image file into the images folder
                                               children: [
@@ -250,27 +270,13 @@ class _ServicesMoreDetails extends State<ServicesMoreDetails> {
                                                               stackTrace,
                                                             ) {
                                                               return Image.asset(
-                                                                "assets/logo_with_name1.png",
+                                                                "assets/loading.gif",
                                                               );
                                                             },
                                                       ),
                                                     ),
                                                   ),
                                               ],
-
-                                              /// Called whenever the page in the center of the viewport changes.
-                                              onPageChanged: (value) {
-                                                select_posication = int.parse(
-                                                  value.toString(),
-                                                );
-                                                // print(
-                                                //   'Page changed s : $select_posication',
-                                                // );
-
-                                                setState(() {});
-                                              },
-                                              autoPlayInterval: 6000,
-                                              isLoop: true,
                                             ),
                                           ),
                                           onTap: () {
@@ -328,6 +334,16 @@ class _ServicesMoreDetails extends State<ServicesMoreDetails> {
                                                   services.result!.shopLogo
                                                       .toString(),
                                                   fit: BoxFit.cover,
+                                                  errorBuilder:
+                                                      (
+                                                        context,
+                                                        error,
+                                                        stackTrace,
+                                                      ) {
+                                                        return Image.asset(
+                                                          "assets/ic_ai_circle_loading.gif",
+                                                        );
+                                                      },
                                                 ),
                                               ),
                                             ),
@@ -831,7 +847,7 @@ class _ServicesMoreDetails extends State<ServicesMoreDetails> {
                         ),
                       ),
                     ),
-                    Container(height: 50, width: 2, color: Colors.white),
+                    Container(height: 50, width: 1, color: Colors.white),
                     Expanded(
                       child: InkWell(
                         onTap: () {

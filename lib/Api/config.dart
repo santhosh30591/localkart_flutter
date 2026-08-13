@@ -21,7 +21,7 @@ class MyHttpOverrides extends HttpOverrides {
 
 var BaseURL = "localkart.app";
 
-var subBase = isLiveMode
+var subBase = !isLiveMode
     ? "https://www.$BaseURL/portal/api"
     : "https://www.$BaseURL/portal/uatapi";
 // : "https://www.$BaseURL/portal/api";
@@ -39,6 +39,11 @@ var urlState = "$subBase/state";
 var urlDistrict = "$subBase/district";
 var urlSendotpnew = "$subBase/sendotpnew";
 var urlRegister = "$subBase/signup";
+var directorylist = "$subBase/directorylist";
+var aidirectorylist = "$subBase/aidirectorylist";
+var district = "$subBase/district";
+var aisearch = subBase + "/aisearch";
+var aiofferslist = subBase + "/aiofferslist";
 var urlDashSlide = "$subBase/homeslider";
 var urlSubSlide = "$subBase/categoryslider";
 var urlProfile = "$subBase/getprofiledetails";
@@ -154,3 +159,4 @@ var url_dashboard = subBase + "/dashboard";
 var getcommonreward = subBase + "/getcommonreward";
 var url_Updatedeviceid = subBase + "/updatedeviceid";
 var url_scan_booking_list = subBase + "/scan_bookedlist";
+var shopservicecategories = subBase + "/shopservicecategories";

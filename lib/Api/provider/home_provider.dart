@@ -296,8 +296,7 @@ class HomePageProvider with ChangeNotifier, DiagnosticableTreeMixin {
         events.addAll(dashboardModel.events!);
         notifyListeners();
         print(
-          "ApiClient encode event list  - " +
-              dashboardModel.events!.length.toString(),
+          "ApiClient encode event list  - ${dashboardModel.events!.length}",
         );
       }
     } catch (e) {

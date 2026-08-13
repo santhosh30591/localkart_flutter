@@ -159,6 +159,63 @@ Widget actionBarTopBottomView(
   );
 }
 
+Widget actionBarAiBGChange(String title, BuildContext context, Widget child) {
+  return AnnotatedRegion<SystemUiOverlayStyle>(
+    value: const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+    child: Stack(
+      children: <Widget>[
+        // Container(
+        //   decoration: const BoxDecoration(
+        //     image: DecorationImage(
+        //       image: AssetImage("assets/login-reg-bg.png"),
+        //       fit: BoxFit.cover,
+        //     ),
+        //   ),
+        // ),
+        Container(decoration: BoxDecoration(gradient: app_gradient)),
+
+        SafeArea(
+          top: true,
+          bottom: true,
+
+          child: Scaffold(
+            // extendBody: true,
+            // extendBodyBehindAppBar: true,
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              // backgroundColor: app_theam,
+              // Here we take the value from the MyHomePage object that was created by
+              // the App.build method, and use it to set our appbar title.
+              title: Text(
+                title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400,
+                ), // Set title color here
+              ),
+            ),
+            body: Container(
+              height: MediaQuery.of(context).size.height,
+              child: child,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 Widget commonViewActionBar(
   String title,
   BuildContext context, {
