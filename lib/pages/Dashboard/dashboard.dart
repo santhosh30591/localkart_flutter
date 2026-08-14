@@ -396,53 +396,52 @@ class _DashboardPage extends State<DashboardPage> {
                                 bottomSelectTabView(),
 
                                 // Pinned bottom right icon
-                                if (!isLiveMode)
-                                  Positioned(
-                                    bottom: 10.0,
-                                    right: 12.0,
-                                    child: InkWell(
-                                      onTap: () {
-                                        Navigator.of(
-                                          context,
-                                        ).pushNamed(root_ai_home);
-                                      },
+                                Positioned(
+                                  bottom: 10.0,
+                                  right: 12.0,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.of(
+                                        context,
+                                      ).pushNamed(root_ai_home);
+                                    },
 
-                                      child: Container(
-                                        width: 50,
-                                        height: 50,
-                                        padding: const EdgeInsets.all(1.0),
-                                        // 1-pixel padding around the asset
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.white,
-                                          // Background color visible through the 1px padding
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(
-                                                0.2,
-                                              ),
-                                              // Shadow color
-                                              spreadRadius: 1,
-                                              // How much the shadow spreads
-                                              blurRadius: 5,
-                                              // How soft the shadow looks
-                                              offset: const Offset(
-                                                0,
-                                                2,
-                                              ), // Shadow position (x, y)
+                                    child: Container(
+                                      width: 50,
+                                      height: 50,
+                                      padding: const EdgeInsets.all(1.0),
+                                      // 1-pixel padding around the asset
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                        // Background color visible through the 1px padding
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.2,
                                             ),
-                                          ],
-                                        ),
-                                        child: ClipOval(
-                                          child: Image.asset(
-                                            "assets/ic_ai_chart.gif",
-                                            fit: BoxFit
-                                                .cover, // Fills the circular shape perfectly
+                                            // Shadow color
+                                            spreadRadius: 1,
+                                            // How much the shadow spreads
+                                            blurRadius: 5,
+                                            // How soft the shadow looks
+                                            offset: const Offset(
+                                              0,
+                                              2,
+                                            ), // Shadow position (x, y)
                                           ),
+                                        ],
+                                      ),
+                                      child: ClipOval(
+                                        child: Image.asset(
+                                          "assets/ic_ai_chart.gif",
+                                          fit: BoxFit
+                                              .cover, // Fills the circular shape perfectly
                                         ),
                                       ),
                                     ),
                                   ),
+                                ),
                               ],
                             ),
                     ),
@@ -960,12 +959,12 @@ class _DashboardPage extends State<DashboardPage> {
                                     "services_id": services_id,
                                     "sub_title": shopping[index].name,
                                   };
-                                  if (!isLiveMode) {
+
                                     Navigator.of(context).pushNamed(
                                       root_services_list,
                                       arguments: arguments,
                                     );
-                                  }
+
                                 },
 
                                 child: Container(
@@ -1799,18 +1798,18 @@ class _DashboardPage extends State<DashboardPage> {
                         alignment: Alignment.center,
                         children: [
                           eventImageLoading(event.image, event.bookingAllow),
-                          if (event.is_video == 1 && event.isPlayingIcons)
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  // event.isPlayingIcons = false;
-                                });
-                              },
-                              child: SizedBox(
-                                height: 40,
-                                child: Image.asset("assets/ic_play.png"),
-                              ),
-                            ),
+                          // if (event.is_video == 1 && event.isPlayingIcons)
+                          //   InkWell(
+                          //     onTap: () {
+                          //       setState(() {
+                          //         // event.isPlayingIcons = false;
+                          //       });
+                          //     },
+                          //     child: SizedBox(
+                          //       height: 40,
+                          //       child: Image.asset("assets/ic_play.png"),
+                          //     ),
+                          //   ),
                         ],
                       ),
                     ),

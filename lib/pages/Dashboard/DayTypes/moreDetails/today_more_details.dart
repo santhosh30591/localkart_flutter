@@ -127,6 +127,7 @@ class _TodayMoreDetails extends State<TodayMoreDetails> {
     services.errorCode = 1;
     selection = widget.indexs;
 
+    setState(() {});
     loadingServiceDetails();
     updatepostviewcount();
     super.initState();
@@ -485,8 +486,7 @@ class _TodayMoreDetails extends State<TodayMoreDetails> {
             ],
           ),
         ),
-        bottomNavigationBar: BottomAppBar(
-          elevation: 0,
+        bottomNavigationBar: Container(
           child: Row(
             children: [
               Expanded(
@@ -535,6 +535,7 @@ class _TodayMoreDetails extends State<TodayMoreDetails> {
                   ),
                 ),
               ),
+              SizedBox(width: 1),
               Expanded(
                 child: InkWell(
                   onTap: () {
@@ -813,7 +814,7 @@ class _TodayMoreDetails extends State<TodayMoreDetails> {
                                 .toString(),
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              return Image.asset("assets/logo_with_name.png");
+                              return Image.asset("assets/loading.gif");
                             },
                           ),
                         ),

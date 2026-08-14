@@ -1,17 +1,29 @@
 class AiDirectoryModel {
   int? errorCode;
   String? message;
-  List<Result>? result;
+  List<ResultMore>? result;
+  List<ResultMore>? resut_array;
 
-  AiDirectoryModel({this.errorCode, this.message, this.result});
+  AiDirectoryModel({
+    this.errorCode,
+    this.message,
+    this.result,
+    this.resut_array,
+  });
 
   AiDirectoryModel.fromJson(Map<String, dynamic> json) {
     errorCode = json['errorCode'];
     message = json['message'];
     if (json['result'] != null) {
-      result = <Result>[];
+      result = <ResultMore>[];
       json['result'].forEach((v) {
-        result!.add(new Result.fromJson(v));
+        result!.add(new ResultMore.fromJson(v));
+      });
+    }
+    if (json['resut_array'] != null) {
+      result = <ResultMore>[];
+      json['resut_array'].forEach((v) {
+        result!.add(new ResultMore.fromJson(v));
       });
     }
   }
@@ -27,25 +39,33 @@ class AiDirectoryModel {
   }
 }
 
-class Result {
+class ResultMore {
   String? name;
   String? call;
   String? address;
+  String? logo;
 
   String? description;
   dynamic shopIndexId;
+  dynamic phone;
+  dynamic offerHeading;
+  dynamic postIndexId;
   String? type;
   String? latitude;
   String? longitude;
   int? isSubscribed;
   String? isVerify;
 
-  Result({
+  ResultMore({
     this.name,
     this.call,
+    this.logo,
     this.address,
     this.description,
+    this.phone,
+    this.offerHeading,
     this.shopIndexId,
+    this.postIndexId,
     this.type,
     this.latitude,
     this.longitude,
@@ -53,12 +73,16 @@ class Result {
     this.isVerify,
   });
 
-  Result.fromJson(Map<String, dynamic> json) {
+  ResultMore.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     call = json['Call'];
+    logo = json['logo'];
     address = json['address'];
     description = json['description'];
     shopIndexId = json['shopIndexId'];
+    offerHeading = json['offerHeading'];
+    postIndexId = json['postIndexId'];
+    phone = json['phone'];
     type = json['type'];
     latitude = json['latitude'];
     longitude = json['longitude'];

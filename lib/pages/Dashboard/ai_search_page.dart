@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:gif/gif.dart';
 import 'package:localkart/Api/api_client.dart';
@@ -9,6 +10,8 @@ import 'package:localkart/data_base/db_config.dart';
 import 'package:localkart/model/ai/ai_directory_model.dart';
 import 'package:localkart/model/ai/ai_home.dart';
 import 'package:localkart/model/dashboard/servicesDetailsModel.dart';
+import 'package:localkart/model/dashboard/todayServicesListModel.dart';
+import 'package:localkart/pages/Dashboard/DayTypes/moreDetails/today_more_details.dart';
 import 'package:localkart/theams_colors.dart';
 import 'package:localkart/unit/action_bar.dart';
 import 'package:localkart/unit/showing.dart';
@@ -94,7 +97,7 @@ class _AiSearchPageState extends State<AiSearchPage> {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         child: Column(
                           children: [
-                            const SizedBox(height: 80),
+                            const SizedBox(height: 100),
                             // Title
                             Text(
                               _aiData?.title ??
@@ -145,7 +148,7 @@ class _AiSearchPageState extends State<AiSearchPage> {
         if (_aiData?.service != null && _aiData!.service!.isNotEmpty)
           _buildHorizontalRow(_aiData!.service!),
         const SizedBox(height: 20),
-        if (_aiData?.offer != null && _aiData!.offer!.isNotEmpty)
+        if (_aiData?.offer != null && _aiData!.offer!.isNotEmpty && isLiveMode)
           _buildHorizontalRow(_aiData!.offer!),
       ],
     );
@@ -389,7 +392,7 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
                               onFetchCompleted: () {
                                 // Optional: adjust duration based on actual frames
                                 _controller.duration = const Duration(
-                                  milliseconds: 2000,
+                                  milliseconds: 12000,
                                 );
                                 _controller.forward();
                               },
@@ -485,12 +488,29 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
     );
   }
 
-  Widget _buildResultsList(List<Result>? _ai_dir_result) {
+  Widget _buildResultsList(List<ResultMore>? _ai_dir_result) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 1),
       itemCount: _ai_dir_result!.length,
       itemBuilder: (context, index) {
         final result = _ai_dir_result[index];
+
+        var phone = "";
+        var logo = "";
+        var description = "";
+        if (item.type == "Today" ||
+            item.type == "Weekly" ||
+            item.type == "MEGASALES" ||
+            item.type == "Festival") {
+          phone = _ai_dir_result![index].phone.toString();
+          description = result.offerHeading.toString();
+          logo = result.logo.toString();
+        } else {
+          logo = result.logo.toString();
+          phone = _ai_dir_result![index].call.toString();
+          description = result.address.toString();
+        }
+
         return Container(
           margin: const EdgeInsets.only(bottom: 15),
           decoration: BoxDecoration(
@@ -525,12 +545,61 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                              "${result.address ?? ""}",
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
+                            Row(
+                              children: [
+                                logo == ""
+                                    ? Container()
+                                    : Container(
+                                        height: 40,
+                                        width: 40,
+                                        margin: EdgeInsets.only(right: 8),
+                                        padding: EdgeInsets.all(3),
+                                        child: ClipOval(
+                                          child: Image.network(
+                                            logo,
+                                            width: 100,
+                                            height: 100,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                                  return Container(
+                                                    width: 100,
+                                                    height: 100,
+                                                    color: Colors.grey[300],
+                                                    child: const Icon(
+                                                      Icons.error,
+                                                      color: Colors.red,
+                                                    ),
+                                                  );
+                                                },
+                                            // Triggers while image is loading (Optional)
+                                            loadingBuilder:
+                                                (
+                                                  context,
+                                                  child,
+                                                  loadingProgress,
+                                                ) {
+                                                  if (loadingProgress == null)
+                                                    return child;
+                                                  return const SizedBox(
+                                                    width: 100,
+                                                    height: 100,
+                                                    child: Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    ),
+                                                  );
+                                                },
+                                          ),
+                                        ),
+                                      ),
+                                Text(
+                                  description,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -579,11 +648,19 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
                     Expanded(
                       child: InkWell(
                         onTap: () async {
-                          final Uri launchUri = Uri(
-                            scheme: 'tel',
-                            path: result.call,
-                          );
-                          await launchUrl(launchUri);
+                          if (item.type == "search") {
+                            final Uri launchUri = Uri(
+                              scheme: 'tel',
+                              path: phone,
+                            );
+                            await launchUrl(launchUri);
+                          } else {
+                            final Uri launchUri = Uri(
+                              scheme: 'tel',
+                              path: phone,
+                            );
+                            await launchUrl(launchUri);
+                          }
                         },
                         child: Container(
                           height: 45,
@@ -614,17 +691,43 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
                     Expanded(
                       child: InkWell(
                         onTap: () {
-                          viewMoewDetails(_ai_dir_result[index]);
-                          // var details = ServiceDetailsModel();
                           //
-                          // Navigator.of(context).pushNamed(
-                          //   root_services_more_details,
-                          //   arguments: details,
-                          // );
+
+                          if (item.type == "Today" ||
+                              item.type == "Weekly" ||
+                              // item.type == "MEGASALES" ||
+                              item.type == "Festival") {
+                            TodayServiceListModel resultToday =
+                                TodayServiceListModel();
+                            resultToday.errorCode = 0;
+                            resultToday.message = "";
+                            List<Result>? results = <Result>[];
+
+                            for (int i = 0; i < _ai_dir_result.length; i++) {
+                              var models = Result(
+                                shopIndexId: _ai_dir_result[i].shopIndexId
+                                    .toString(),
+                                type: _ai_dir_result[i].type.toString(),
+                                postIndexId: _ai_dir_result[i].postIndexId,
+                                latitude: _ai_dir_result[i].latitude.toString(),
+                                longitude: _ai_dir_result[i].longitude
+                                    .toString(),
+                                name: _ai_dir_result[i].name.toString(),
+                                isSubscribed: _ai_dir_result[i].isSubscribed,
+                              );
+
+                              results.add(models);
+                            }
+
+                            resultToday.result = results;
+
+                            viewDetails(resultToday, index);
+                          } else {
+                            viewMoewDetails(_ai_dir_result[index]);
+                          }
                         },
                         child: Container(
                           height: 45,
-
                           decoration: BoxDecoration(
                             gradient: gradient_btn_rigth,
                           ),
@@ -656,7 +759,7 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
     );
   }
 
-  void viewMoewDetails(Result result) async {
+  void viewMoewDetails(ResultMore result) async {
     var type = result.type;
 
     ServiceDetailsModel model;
@@ -667,9 +770,9 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
     model.distanceInt = "0";
 
     errorMsg = "";
-    AccessOptions acc = AccessOptions();
+    // AccessOptions acc = AccessOptions();
     setState(() {});
-    model.accessOptions = acc;
+    // model.accessOptions = acc;
     model.description = result.description.toString();
     model.shopIndexId = result.shopIndexId.toString();
     model.type = type.toString();
@@ -691,7 +794,7 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
     setState(() {});
   }
 
-  List<Result>? _ai_dir_result = [];
+  List<ResultMore>? _ai_dir_result = [];
 
   void _fetchData(AiItem item) async {
     var userid = await DBHelper().getUserId();
@@ -703,7 +806,7 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
 
     String url = "" + aidirectorylist;
 
-    setState(() {});
+    // setState(() {});
     var type = item.type;
 
     print("offerssss " + item.name.toString());
@@ -744,5 +847,15 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
       _ai_dir_result = _aiDirectoryModel.result;
     }
     setState(() => _isLoading = false);
+  }
+
+  void viewDetails(TodayServiceListModel resultToday, int index) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            TodayMoreDetails(result: resultToday, indexs: index),
+      ),
+    );
+    _fetchData(item);
   }
 }

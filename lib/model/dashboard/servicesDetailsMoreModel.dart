@@ -8,8 +8,9 @@ class ServiceDetailsMoreModel {
   ServiceDetailsMoreModel.fromJson(Map<String, dynamic> json) {
     errorCode = json['errorCode'];
     message = json['message'];
-    result =
-        json['result'] != null ? new Results.fromJson(json['result']) : null;
+    result = json['result'] != null
+        ? new Results.fromJson(json['result'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -50,34 +51,33 @@ class Results {
   String? viewCount;
   String? averageRating;
 
-
-
-  Results(
-      {this.shopName,
-      this.shopLogo,
-      this.shopDesc,
-      this.shopPhone,
-      this.shopMobile,
-      this.shopWhatsapp,
-      this.shopEmail,
-      this.shopWebsite,
-      this.distance,
-      this.shopLatitude,
-      this.shopLongitude,
-      this.shopDoorNo,
-      this.shopArea,
-      this.shopLocality,
-      this.shopLandmark,
-      this.shopPost,
-      this.shopState,
-      this.shopDistrict,
-      this.shopPincode,
-      this.shopServiceList,
-      this.shopImageList,
-      this.accessOptions,
-      this.shareUrl,
-      this.viewCount,
-      this.averageRating});
+  Results({
+    this.shopName,
+    this.shopLogo,
+    this.shopDesc,
+    this.shopPhone,
+    this.shopMobile,
+    this.shopWhatsapp,
+    this.shopEmail,
+    this.shopWebsite,
+    this.distance,
+    this.shopLatitude,
+    this.shopLongitude,
+    this.shopDoorNo,
+    this.shopArea,
+    this.shopLocality,
+    this.shopLandmark,
+    this.shopPost,
+    this.shopState,
+    this.shopDistrict,
+    this.shopPincode,
+    this.shopServiceList,
+    this.shopImageList,
+    this.accessOptions,
+    this.shareUrl,
+    this.viewCount,
+    this.averageRating,
+  });
 
   Results.fromJson(Map<String, dynamic> json) {
     shopName = json['shopName'];
@@ -99,8 +99,8 @@ class Results {
     shopState = json['shopState'];
     shopDistrict = json['shopDistrict'];
     shopPincode = json['shopPincode'];
-    viewCount =json['viewCount'];
-    averageRating=json['averageRating'];
+    viewCount = json['viewCount'];
+    averageRating = json['averageRating'];
     if (json['shopServiceList'] != null) {
       shopServiceList = <ShopServiceList>[];
       json['shopServiceList'].forEach((v) {
@@ -144,20 +144,22 @@ class Results {
     data['shopDistrict'] = this.shopDistrict;
     data['shopPincode'] = this.shopPincode;
     data['viewCount'] = this.viewCount;
-    data['averageRating'] =this.averageRating;
-
+    data['averageRating'] = this.averageRating;
 
     if (this.shopServiceList != null) {
-      data['shopServiceList'] =
-          this.shopServiceList!.map((v) => v.toJson()).toList();
+      data['shopServiceList'] = this.shopServiceList!
+          .map((v) => v.toJson())
+          .toList();
     }
     if (this.shopImageList != null) {
-      data['shopImageList'] =
-          this.shopImageList!.map((v) => v.toJson()).toList();
+      data['shopImageList'] = this.shopImageList!
+          .map((v) => v.toJson())
+          .toList();
     }
     if (this.accessOptions != null) {
-      data['accessOptions'] =
-          this.accessOptions!.map((v) => v.toJson()).toList();
+      data['accessOptions'] = this.accessOptions!
+          .map((v) => v.toJson())
+          .toList();
     }
     data['shareUrl'] = this.shareUrl;
     return data;
