@@ -310,13 +310,14 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
     _controller = GifController(vsync: this);
     item = widget.item;
     _ai_dir_result = [];
+    _ai_api_result = [];
     _fetchData(item);
     // Listen for animation status
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         print("finished");
-
-        if (_ai_dir_result!.length == 0) {
+        _ai_dir_result = _ai_api_result;
+        if (_ai_api_result!.length == 0) {
           errorMsg =
               "Sorry, I'm unable to provide the requested\ninformation at the moment.";
           isRetry = true;
@@ -794,6 +795,7 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
     setState(() {});
   }
 
+  List<ResultMore>? _ai_api_result = [];
   List<ResultMore>? _ai_dir_result = [];
 
   void _fetchData(AiItem item) async {
@@ -844,7 +846,7 @@ class _AiLoadingScreenState extends State<AiLoadingScreen>
 
     if (data['errorCode'] == 0) {
       var _aiDirectoryModel = AiDirectoryModel.fromJson(data);
-      _ai_dir_result = _aiDirectoryModel.result;
+      _ai_api_result = _aiDirectoryModel.result;
     }
     setState(() => _isLoading = false);
   }

@@ -157,12 +157,10 @@ class DBHelper {
   Future<String> getUserId() async {
     String userId = "";
     try {
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var outputs = await prefs.getString('login') ?? "5";
-        var datas = json.decode(outputs);
-        userId = datas['result']['Id'].toString();
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var outputs = await prefs.getString('login') ?? "5";
+      var datas = json.decode(outputs);
+      userId = datas['result']['Id'].toString();
     } catch (e) {
       print("get Login error - " + e.toString());
     }

@@ -322,25 +322,25 @@ class _DashboardPage extends State<DashboardPage> {
                       actions: [
                         InkWell(
                           onTap: () async {
-                            if (!isLiveMode) {
-                              if (_currentIndex == 0) {
-                                // Navigator.of(context).pushNamed(root_search);
-                                var details = RewardDetails(
-                                  id: 192,
-                                  reward_title: "test title",
-                                  reward_type: "Reward typesss",
-                                  reward_validity: "12-12-2026",
-                                );
 
-                                try {
-                                  scarchCard(context, details);
-                                } catch (e) {
-                                  print("error $e");
-                                }
+                              if (_currentIndex == 0) {
+                                Navigator.of(context).pushNamed(root_search);
+                                // var details = RewardDetails(
+                                //   id: 192,
+                                //   reward_title: "test title",
+                                //   reward_type: "Reward typesss",
+                                //   reward_validity: "12-12-2026",
+                                // );
+                                //
+                                // try {
+                                //   scarchCard(context, details);
+                                // } catch (e) {
+                                //   print("error $e");
+                                // }
                               } else {
                                 showEventAlerts();
                               }
-                            }
+
                           },
                           child: Container(
                             padding: EdgeInsets.all(5),
@@ -355,32 +355,6 @@ class _DashboardPage extends State<DashboardPage> {
                             ),
                           ),
                         ),
-                        // InkWell(
-                        //   onTap: () async {
-                        //     if (!isLiveMode) {
-                        //       if (_currentIndex == 0) {
-                        //         Navigator.of(
-                        //           context,
-                        //         ).pushNamed(root_notification_list);
-                        //       } else {
-                        //         showEventAlerts();
-                        //       }
-                        //     }
-                        //   },
-                        //   child: Container(
-                        //     padding: EdgeInsets.all(5),
-                        //     margin: EdgeInsets.only(right: 5),
-                        //     child: Icon(
-                        //       _currentIndex == 0
-                        //           ? Icons.notifications_none
-                        //           : _currentIndex == 1
-                        //           ? Icons.filter_alt_outlined
-                        //           : null,
-                        //       color: Colors.white,
-                        //       size: 24,
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                     body: Container(
@@ -542,7 +516,7 @@ class _DashboardPage extends State<DashboardPage> {
                         return events[index].eventname == "More"
                             ? InkWell(
                                 onTap: () {
-                                  if (!isLiveMode) {
+
                                     _currentIndex = 1;
                                     selectEventFilter = 1;
                                     provider.getDashboardEvent(
@@ -554,7 +528,7 @@ class _DashboardPage extends State<DashboardPage> {
                                       selectEventFilter,
                                     );
                                     setState(() {});
-                                  }
+
                                 },
                                 child: Container(
                                   width: 120,
@@ -574,7 +548,7 @@ class _DashboardPage extends State<DashboardPage> {
                               )
                             : InkWell(
                                 onTap: () {
-                                  if (!isLiveMode) {
+
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => EventDetailsPage(
@@ -585,7 +559,7 @@ class _DashboardPage extends State<DashboardPage> {
                                         ),
                                       ),
                                     );
-                                  }
+
                                 },
 
                                 child: Container(
@@ -960,11 +934,10 @@ class _DashboardPage extends State<DashboardPage> {
                                     "sub_title": shopping[index].name,
                                   };
 
-                                    Navigator.of(context).pushNamed(
-                                      root_services_list,
-                                      arguments: arguments,
-                                    );
-
+                                  Navigator.of(context).pushNamed(
+                                    root_services_list,
+                                    arguments: arguments,
+                                  );
                                 },
 
                                 child: Container(
